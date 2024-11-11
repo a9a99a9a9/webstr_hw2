@@ -1,0 +1,33 @@
+/* src/app/components/home/Home.css */
+.home {
+    padding: 20px;
+    background-color: #111;
+  }
+  
+  .movie-row {
+    margin-bottom: 30px;
+  }
+  
+  .movie-row h2 {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .movie-row__posters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .movie-row__poster {
+    width: 150px;
+    height: 225px;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  
+  .movie-row__poster:hover {
+    transform: scale(1.1);
+  }
+  
