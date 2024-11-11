@@ -1,0 +1,31 @@
+.wishlist-container {
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+  
+  .movie-list {
+    margin-top: 20px;
+  }
+  
+  .movie-item {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #ff4d4d;
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  
+  button:hover {
+    background-color: #ff1a1a;
+  }
+  
