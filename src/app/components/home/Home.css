@@ -1,24 +1,33 @@
 /* src/app/components/home/Home.css */
-
 .home {
     padding: 20px;
+    background-color: #111;
   }
   
-  .movie-list {
+  .movie-row {
+    margin-bottom: 30px;
+  }
+  
+  .movie-row h2 {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .movie-row__posters {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 10px;
   }
   
-  .movie-item {
-    width: 200px;
-    text-align: center;
-    margin: 10px;
+  .movie-row__poster {
+    width: 150px;
+    height: 225px;
+    object-fit: cover;
+    transition: transform 0.3s;
   }
   
-  .movie-poster {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
+  .movie-row__poster:hover {
+    transform: scale(1.1);
   }
   

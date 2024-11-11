@@ -1,17 +1,22 @@
-/* src/components/home/MovieRow/MovieRow.css */
+/* src/app/components/home/movieRow/MovieRow.css */
 .movie-row {
-    margin: 20px 0;
-  }
-  
-  .movie-row__posters {
-    display: flex;
-    overflow-x: scroll;
-  }
-  
-  .movie-row__poster {
-    width: 100px;
-    height: 150px;
-    object-fit: cover;
-    margin-right: 10px;
-  }
-  
+  margin-bottom: 30px;
+}
+
+.movie-row__posters {
+  display: flex;
+  gap: 10px;
+  overflow-x: scroll;
+}
+
+.movie-row__poster {
+  width: 150px;
+  height: 225px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.movie-row__poster:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s;
+}
