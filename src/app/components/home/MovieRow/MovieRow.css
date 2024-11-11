@@ -1,0 +1,17 @@
+/* src/components/home/MovieRow/MovieRow.css */
+.movie-row {
+    margin: 20px 0;
+  }
+  
+  .movie-row__posters {
+    display: flex;
+    overflow-x: scroll;
+  }
+  
+  .movie-row__poster {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+    margin-right: 10px;
+  }
+  
