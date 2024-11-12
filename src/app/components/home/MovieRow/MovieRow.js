@@ -1,9 +1,7 @@
-// src/app/components/home/MovieRow/MovieRow.js
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom'; // Link 추가
 import './MovieRow.css';
 
-function MovieRow({ title, fetchMovies }) {
+function MovieRow({ title, fetchMovies, onPosterClick }) {
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -34,13 +32,16 @@ function MovieRow({ title, fetchMovies }) {
           <p>Loading...</p>
         ) : (
           movies.map((movie) => (
-            <Link key={movie.id} to={`/movie/${movie.id}`} className="movie-row__link">
+            <div 
+              key={movie.id} 
+              className="movie-row__poster" 
+              onClick={() => onPosterClick(movie)} // 클릭 시 openModal 호출
+            >
               <img
-                className="movie-row__poster"
                 src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
                 alt={movie.title}
               />
-            </Link>
+            </div>
           ))
         )}
       </div>
