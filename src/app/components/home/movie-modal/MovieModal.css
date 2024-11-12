@@ -16,7 +16,9 @@
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  max-width: 600px;
+  max-width: 50%; /* 화면 너비의 90%로 제한 */
+  max-height: 50%; /* 화면 높이의 90%로 제한 */
+  overflow: auto;  /* 내용이 넘치면 스크롤이 생깁니다 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,7 +33,8 @@
 }
 
 .movie-modal__image img {
-  width: 100%;
+  width: 50%;
+  max-width: 400px; /* 이미지 최대 너비를 400px로 제한 */
   border-radius: 10px;
 }
 

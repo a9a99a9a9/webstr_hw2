@@ -16,7 +16,13 @@ function MovieModal({ movie, onClose, onAddToWishlist }) {
         </div>
         <div className="movie-modal__details">
           <h2>{movie.title}</h2>
-          <p>{movie.overview}</p>
+          <p><strong>개봉일:</strong> {movie.release_date}</p>
+          <p><strong>평점:</strong> {movie.vote_average} / 10</p>
+          <p><strong>줄거리:</strong> {movie.overview}</p>
+          {/* 장르 정보 표시 */}
+          {movie.genres && (
+            <p><strong>장르:</strong> {movie.genres.map((genre) => genre.name).join(', ')}</p>
+          )}
           <button onClick={onAddToWishlist}>찜하기</button>
         </div>
       </div>
