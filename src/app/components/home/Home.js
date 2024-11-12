@@ -1,7 +1,6 @@
 // src/app/components/home/Home.js
-
 import React, { useState, useEffect } from 'react';
-import Header from '../../layout/header/Header'; // Header 임포트 추가
+import { Link } from 'react-router-dom';  // Link 추가
 import MovieRow from './MovieRow/MovieRow';
 import './Home.css';
 import { fetchMovies } from '../../util/api/APIService';
@@ -17,7 +16,6 @@ function Home() {
     setLoading(true);
     setError(null);
 
-    // 여러 API 요청을 병렬로 처리
     Promise.all([
       fetchMovies('popular'),
       fetchMovies('new_releases'),
@@ -46,9 +44,6 @@ function Home() {
 
   return (
     <div className="home">
-      {/* Header 컴포넌트 추가 */}
-      <Header />
-
       <MovieRow title="인기 영화" fetchMovies={fetchMovies} />
       <MovieRow title="최신 영화" fetchMovies={fetchMovies} />
       <MovieRow title="액션 영화" fetchMovies={fetchMovies} />

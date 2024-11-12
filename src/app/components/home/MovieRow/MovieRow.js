@@ -1,4 +1,6 @@
+// src/app/components/home/MovieRow/MovieRow.js
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom'; // Link 추가
 import './MovieRow.css';
 
 function MovieRow({ title, fetchMovies }) {
@@ -15,7 +17,7 @@ function MovieRow({ title, fetchMovies }) {
     };
 
     loadMovies();
-  }, [page, fetchMovies]);  // 페이지 변경 시마다 실행
+  }, [page, fetchMovies]);
 
   const handleScroll = (e) => {
     const bottom = e.target.scrollHeight === e.target.scrollTop + e.target.clientHeight;
@@ -32,12 +34,13 @@ function MovieRow({ title, fetchMovies }) {
           <p>Loading...</p>
         ) : (
           movies.map((movie) => (
-            <img
-              key={movie.id}
-              className="movie-row__poster"
-              src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
-              alt={movie.title}
-            />
+            <Link key={movie.id} to={`/movie/${movie.id}`} className="movie-row__link">
+              <img
+                className="movie-row__poster"
+                src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
+                alt={movie.title}
+              />
+            </Link>
           ))
         )}
       </div>
