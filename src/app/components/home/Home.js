@@ -1,4 +1,3 @@
-// src/app/components/home/Home.js
 import React, { useState, useEffect } from 'react';
 import MovieRow from './MovieRow/MovieRow';
 import MovieModal from './movie-modal/MovieModal'; // 모달 컴포넌트 추가
@@ -19,6 +18,7 @@ function Home() {
     setLoading(true);
     setError(null);
 
+    // 영화 데이터를 모두 가져오기
     Promise.all([
       fetchMovies('popular'),
       fetchMovies('new_releases'),

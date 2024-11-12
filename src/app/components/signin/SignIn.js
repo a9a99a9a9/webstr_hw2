@@ -1,126 +1,127 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigate로 변경
-import './SignIn.css'; // CSS 파일 임포트
+import { useNavigate } from 'react-router-dom';
+import './SignIn.css';
 
-const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-
-const SignIn = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
+const SignIn = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [agreeTerms, setAgreeTerms] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate(); // useNavigate로 리디렉션 처리
+  const [isLoginVisible, setIsLoginVisible] = useState(true);
+  const [isEmailFocused, setIsEmailFocused] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
-  // 이메일 형식 검사
-  const validateEmail = (email) => emailRegex.test(email);
+  const navigate = useNavigate();
 
-  // 로그인 함수
-  const handleLogin = () => {
-    if (!validateEmail(email)) {
-      setErrorMessage('Invalid email format');
-      return;
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // 로그인 성공 처리
+    if (email && password) {
+      // 로그인 성공 시 localStorage에 정보 저장
+      localStorage.setItem('email', email);
+      localStorage.setItem('password', password);
+
+      // 상태를 업데이트하여 인증 처리
+      setIsAuthenticated(true);
+      
+      // home 페이지로 이동
+      navigate('/');
     }
-
-    // TMDB API 호출 (비밀번호 검증)
-    fetch('https://api.themoviedb.org/3/authentication/token/new?api_key=YOUR_API_KEY')
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          localStorage.setItem('email', email);
-          localStorage.setItem('password', password); // 암호화 고려 필요
-          navigate('/'); // 로그인 성공 후 홈 페이지로 리디렉션
-        } else {
-          setErrorMessage('Invalid credentials');
-        }
-      });
   };
 
-  // 회원가입 함수
-  const handleSignUp = () => {
-    if (!validateEmail(email)) {
-      setErrorMessage('Invalid email format');
-      return;
-    }
+  const focusInput = (field) => {
+    if (field === 'email') setIsEmailFocused(true);
+    if (field === 'password') setIsPasswordFocused(true);
+  };
 
-    if (password !== confirmPassword) {
-      setErrorMessage('Passwords do not match');
-      return;
-    }
+  const blurInput = (field) => {
+    if (field === 'email') setIsEmailFocused(false);
+    if (field === 'password') setIsPasswordFocused(false);
+  };
 
-    if (!agreeTerms) {
-      setErrorMessage('You must agree to the terms');
-      return;
-    }
-
-    // 회원가입 로직 (여기서는 로그인 창으로 이동)
-    alert('Sign Up Successful!');
-    navigate('/signin'); // 회원가입 후 로그인 페이지로 이동
+  const toggleCard = () => {
+    setIsLoginVisible(!isLoginVisible);
   };
 
   return (
-    <div className="container">
-      <h2>{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <div>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <div>
+      <div className="bg-image"></div>
+      <div className="container">
+        <div id="phone">
+          <div id="content-wrapper">
+            {/* 로그인 화면 */}
+            <div className={`card ${isLoginVisible ? '' : 'hidden'}`} id="login">
+              <form onSubmit={handleLogin}>
+                <h1>Sign in</h1>
+                <div className={`input ${isEmailFocused || email ? 'active' : ''}`}>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onFocus={() => focusInput('email')}
+                    onBlur={() => blurInput('email')}
+                  />
+                  <label htmlFor="email">Username or Email</label>
+                </div>
+                <div className={`input ${isPasswordFocused || password ? 'active' : ''}`}>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onFocus={() => focusInput('password')}
+                    onBlur={() => blurInput('password')}
+                  />
+                  <label htmlFor="password">Password</label>
+                </div>
+                <span className="checkbox remember">
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    checked={rememberMe}
+                    onChange={() => setRememberMe(!rememberMe)}
+                  />
+                  <label htmlFor="remember" className="read-text">Remember me</label>
+                </span>
+                <span className="checkbox forgot">
+                  <a href="#">Forgot Password?</a>
+                </span>
+                <button type="submit" disabled={!email || !password}>Login</button>
+              </form>
+              <a href="javascript:void(0)" className="account-check" onClick={toggleCard}>
+                Don't have an account? <b>Sign up</b>
+              </a>
+            </div>
+
+            {/* 회원가입 화면 */}
+            <div className={`card ${isLoginVisible ? 'hidden' : ''}`} id="register">
+              <form>
+                <h1>Sign up</h1>
+                <div className="input">
+                  <input type="email" id="register-email" placeholder="Email" />
+                  <label htmlFor="register-email">Email</label>
+                </div>
+                <div className="input">
+                  <input type="password" id="register-password" placeholder="Password" />
+                  <label htmlFor="register-password">Password</label>
+                </div>
+                <div className="input">
+                  <input type="password" id="confirm-password" placeholder="Confirm Password" />
+                  <label htmlFor="confirm-password">Confirm Password</label>
+                </div>
+                <span className="checkbox remember">
+                  <input type="checkbox" id="terms" />
+                  <label htmlFor="terms" className="read-text">I have read the Terms and Conditions</label>
+                </span>
+                <button>Register</button>
+              </form>
+              <a href="javascript:void(0)" className="account-check" onClick={toggleCard}>
+                Already have an account? <b>Sign in</b>
+              </a>
+            </div>
+          </div>
         </div>
-        <div>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        {isSignUp && (
-          <div>
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-        )}
-        {isSignUp && (
-          <div>
-            <input
-              type="checkbox"
-              checked={agreeTerms}
-              onChange={() => setAgreeTerms(!agreeTerms)}
-            />
-            <span>I agree to the terms and conditions</span>
-          </div>
-        )}
-        {!isSignUp && (
-          <div>
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-            />
-            <span>Remember Me</span>
-          </div>
-        )}
-        <button onClick={isSignUp ? handleSignUp : handleLogin}>
-          {isSignUp ? 'Sign Up' : 'Sign In'}
-        </button>
-        {errorMessage && <div className="error-message">{errorMessage}</div>}
-        <button type="button" onClick={() => setIsSignUp(!isSignUp)}>
-          {isSignUp ? 'Already have an account? Sign In' : 'Don\'t have an account? Sign Up'}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };
