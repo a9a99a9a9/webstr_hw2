@@ -1,0 +1,131 @@
+/* 기본 스타일 */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .container {
+    width: 400px;
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    animation: fadeIn 0.8s ease-out;
+  }
+  
+  /* 텍스트 스타일 */
+  h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* 입력 필드 스타일 */
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  /* 입력 필드 포커스 시 효과 */
+  input[type="email"]:focus,
+  input[type="password"]:focus {
+    border-color: #4e9fef;
+  }
+  
+  /* 버튼 스타일 */
+  button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #4e9fef;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #3884d1;
+    transform: scale(1.05);
+  }
+  
+  button:active {
+    transform: scale(1);
+  }
+  
+  /* 에러 메시지 */
+  .error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 10px;
+  }
+  
+  /* 트랜지션 효과 */
+  button[type="button"] {
+    background-color: transparent;
+    color: #4e9fef;
+    border: 2px solid #4e9fef;
+    margin-top: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  button[type="button"]:hover {
+    background-color: #4e9fef;
+    color: white;
+  }
+  
+  /* 회원가입/로그인 전환 애니메이션 */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 10px;
+  }
+  
+  input[type="checkbox"]:checked {
+    background-color: #4e9fef;
+  }
+  
+  /* 비밀번호 확인 필드 애니메이션 */
+  input[type="password"]:nth-of-type(2) {
+    animation: slideIn 1s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateX(200px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  

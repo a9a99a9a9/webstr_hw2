@@ -35,6 +35,10 @@ function Home() {
         setLoading(false);
         console.error(error);
       });
+
+    // localStorage에서 찜 목록 불러오기
+    const storedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    setWishlist(storedWishlist);
   }, []);
 
   const openModal = (movie) => {
@@ -47,8 +51,12 @@ function Home() {
   };
 
   const addToWishlist = () => {
-    setWishlist([...wishlist, selectedMovie]); // 찜 목록에 영화 추가
-    closeModal(); // 찜 후 모달 닫기
+    if (selectedMovie && !wishlist.some((movie) => movie.id === selectedMovie.id)) {
+      const newWishlist = [...wishlist, selectedMovie];
+      setWishlist(newWishlist);
+      localStorage.setItem('wishlist', JSON.stringify(newWishlist)); // 찜 목록을 localStorage에 저장
+      closeModal(); // 찜 후 모달 닫기
+    }
   };
 
   if (loading) {

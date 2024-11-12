@@ -1,44 +1,46 @@
-import React, { useState } from 'react';
-import './Wishlist.css'; // CSS 파일은 필요시 추가
+// src/app/components/home/wishlist/Wishlist.js
 
-const MovieWishlist = () => {
-  // 예시로 좋아하는 영화 목록을 관리하는 상태
+import React, { useState, useEffect } from 'react';
+import './Wishlist.css';
+
+const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
 
-  // 영화 추가 함수
-  const addMovieToWishlist = (movie) => {
-    setWishlist([...wishlist, movie]);
-  };
+  useEffect(() => {
+    // localStorage에서 찜 목록 불러오기
+    const storedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    setWishlist(storedWishlist);
+  }, []);
 
-  // 영화 삭제 함수
-  const removeMovieFromWishlist = (movieId) => {
-    setWishlist(wishlist.filter(movie => movie.id !== movieId));
+  const removeFromWishlist = (id) => {
+    const newWishlist = wishlist.filter((movie) => movie.id !== id);
+    setWishlist(newWishlist);
+    localStorage.setItem('wishlist', JSON.stringify(newWishlist)); // localStorage에 저장
   };
 
   return (
-    <div className="wishlist-container">
-      <h2>Wishlist</h2>
-      <div className="movie-list">
-        {wishlist.length > 0 ? (
-          wishlist.map((movie) => (
-            <div key={movie.id} className="movie-item">
-              <h3>{movie.title}</h3>
-              <button onClick={() => removeMovieFromWishlist(movie.id)}>
-                Remove from Wishlist
-              </button>
+    <div className="wishlist">
+      <h1>내가 찜한 리스트</h1>
+      {wishlist.length === 0 ? (
+        <p>찜한 영화가 없습니다.</p>
+      ) : (
+        <div className="wishlist-movies">
+          {wishlist.map((movie) => (
+            <div key={movie.id} className="wishlist-movie">
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+              />
+              <div className="wishlist-movie-info">
+                <h2>{movie.title}</h2>
+                <button onClick={() => removeFromWishlist(movie.id)}>삭제</button>
+              </div>
             </div>
-          ))
-        ) : (
-          <p>No movies in your wishlist.</p>
-        )}
-      </div>
-
-      {/* 예시로 영화 추가 버튼을 넣음 */}
-      <button onClick={() => addMovieToWishlist({ id: Date.now(), title: 'New Movie' })}>
-        Add a Movie to Wishlist
-      </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
-export default MovieWishlist;
+export default Wishlist;
