@@ -1,0 +1,64 @@
+/* src/app/components/movie-modal/MovieModal.css */
+.movie-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.movie-modal__content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.movie-modal__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.movie-modal__image img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.movie-modal__details {
+  text-align: center;
+}
+
+.movie-modal__details h2 {
+  margin-top: 10px;
+  font-size: 24px;
+}
+
+.movie-modal__details p {
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.movie-modal__details button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.movie-modal__details button:hover {
+  background-color: #0056b3;
+}
