@@ -9,22 +9,39 @@ const SignIn = ({ setIsAuthenticated }) => {
   const [isLoginVisible, setIsLoginVisible] = useState(true);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // 로그인 성공 처리
-    if (email && password) {
-      // 로그인 성공 시 localStorage에 정보 저장
-      localStorage.setItem('email', email);
-      localStorage.setItem('password', password);
+    const registeredUser = JSON.parse(localStorage.getItem('registeredUser'));
 
-      // 상태를 업데이트하여 인증 처리
+    if (registeredUser && email === registeredUser.email && password === registeredUser.password) {
       setIsAuthenticated(true);
-      
-      // home 페이지로 이동
       navigate('/');
+    } else {
+      alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+    }
+  };
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+
+    if (registerPassword !== confirmPassword) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    if (registerEmail && registerPassword) {
+      localStorage.setItem('registeredUser', JSON.stringify({ email: registerEmail, password: registerPassword }));
+      alert('회원가입이 완료되었습니다. 이제 로그인할 수 있습니다.');
+      toggleCard();
+    } else {
+      alert('모든 필드를 입력해 주세요.');
     }
   };
 
@@ -95,25 +112,43 @@ const SignIn = ({ setIsAuthenticated }) => {
 
             {/* 회원가입 화면 */}
             <div className={`card ${isLoginVisible ? 'hidden' : ''}`} id="register">
-              <form>
+              <form onSubmit={handleRegister}>
                 <h1>Sign up</h1>
                 <div className="input">
-                  <input type="email" id="register-email" placeholder="Email" />
+                  <input
+                    type="email"
+                    id="register-email"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                    placeholder="Email"
+                  />
                   <label htmlFor="register-email">Email</label>
                 </div>
                 <div className="input">
-                  <input type="password" id="register-password" placeholder="Password" />
+                  <input
+                    type="password"
+                    id="register-password"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                    placeholder="Password"
+                  />
                   <label htmlFor="register-password">Password</label>
                 </div>
                 <div className="input">
-                  <input type="password" id="confirm-password" placeholder="Confirm Password" />
+                  <input
+                    type="password"
+                    id="confirm-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm Password"
+                  />
                   <label htmlFor="confirm-password">Confirm Password</label>
                 </div>
                 <span className="checkbox remember">
                   <input type="checkbox" id="terms" />
                   <label htmlFor="terms" className="read-text">I have read the Terms and Conditions</label>
                 </span>
-                <button>Register</button>
+                <button type="submit">Register</button>
               </form>
               <a href="javascript:void(0)" className="account-check" onClick={toggleCard}>
                 Already have an account? <b>Sign in</b>
