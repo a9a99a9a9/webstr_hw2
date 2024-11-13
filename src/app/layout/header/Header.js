@@ -1,14 +1,13 @@
-// src/app/components/layout/Header.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';  
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTicketAlt, faUser, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTicketAlt, faBars, faTimes, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import './Header.css';
 
-const Header = () => {
+const Header = ({ setIsAuthenticated }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [wishlistCount, setWishlistCount] = useState(0); // 찜 목록 개수 상태
+  const [wishlistCount, setWishlistCount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,13 +15,19 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
 
-    // 찜 목록 개수 업데이트
     const storedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
     setWishlistCount(storedWishlist.length);
   }, []);
 
   const removeKey = () => {
+    // localStorage에서 로그인 정보 및 찜 리스트 삭제
     localStorage.removeItem('TMDb-Key');
+    localStorage.removeItem('wishlist');
+    
+    // 인증 상태를 false로 설정
+    setIsAuthenticated(false);
+
+    // 페이지 리디렉션 (로그인 페이지로 이동)
     navigate('/signin');
   };
 
@@ -43,14 +48,14 @@ const Header = () => {
             <ul>
               <li><Link to="/">홈</Link></li>
               <li><Link to="/popular">대세 콘텐츠</Link></li>
-              <li><Link to="/wishlist">내가 찜한 리스트 ({wishlistCount})</Link></li> {/* 찜한 영화 개수 표시 */}
+              <li><Link to="/wishlist">내가 찜한 리스트 ({wishlistCount})</Link></li>
               <li><Link to="/search">찾아보기</Link></li>
             </ul>
           </nav>
         </div>
         <div className="header-right">
           <button className="icon-button" onClick={removeKey}>
-            <FontAwesomeIcon icon={faUser} />
+            <FontAwesomeIcon icon={faSignOutAlt} /> 로그아웃
           </button>
           <button className="icon-button mobile-menu-button" onClick={toggleMobileMenu}>
             <FontAwesomeIcon icon={faBars} />
@@ -58,7 +63,6 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Navigation */}
       <div className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
         <button className="close-button" onClick={toggleMobileMenu}>
           <FontAwesomeIcon icon={faTimes} />
@@ -67,13 +71,12 @@ const Header = () => {
           <ul>
             <li><Link to="/" onClick={toggleMobileMenu}>홈</Link></li>
             <li><Link to="/popular" onClick={toggleMobileMenu}>대세 콘텐츠</Link></li>
-            <li><Link to="/wishlist" onClick={toggleMobileMenu}>내가 찜한 리스트 ({wishlistCount})</Link></li> {/* 찜한 영화 개수 표시 */}
+            <li><Link to="/wishlist" onClick={toggleMobileMenu}>내가 찜한 리스트 ({wishlistCount})</Link></li>
             <li><Link to="/search" onClick={toggleMobileMenu}>찾아보기</Link></li>
           </ul>
         </nav>
       </div>
     </div>
-
   );
 };
 
