@@ -19,7 +19,7 @@ function Home() {
   const [wishlist, setWishlist] = useState([]); // 찜 목록 상태
   const [recommendedMovies, setRecommendedMovies] = useState([]); // 추천 영화 상태
 
-  // 랜덤 정렬 함수 (Fisher-Yates 알고리즘)
+  // 랜덤 정렬 함수
   const shuffleArray = (array) => {
     const shuffled = [...array]; // 원본 배열을 건드리지 않기 위해 복사
     for (let i = shuffled.length - 1; i > 0; i--) {
