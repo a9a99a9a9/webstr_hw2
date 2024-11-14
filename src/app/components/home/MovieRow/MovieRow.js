@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from "react";
 import './MovieRow.css';
 
-function MovieRow({ title, fetchMovies, onPosterClick }) {
-  const [movies, setMovies] = useState([]);
+function MovieRow({ title, movies: initialMovies, fetchMovies, onPosterClick }) {
+  const [movies, setMovies] = useState(initialMovies); // 초기 movies 사용
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // 새로운 카테고리일 때 초기화
+    setMovies(initialMovies);
+    setPage(1);
+  }, [initialMovies]);
+
+  useEffect(() => {
+    // 추가 페이지 로드
     const loadMovies = async () => {
-      setLoading(true);
-      const newMovies = await fetchMovies(page);  // fetchMovies를 props로 받아서 사용
-      setMovies((prevMovies) => [...prevMovies, ...newMovies]);
-      setLoading(false);
+      if (page > 1) { // 페이지 1 이상일 때 추가 로드
+        setLoading(true);
+        const newMovies = await fetchMovies(page); // fetchMovies에 page 전달
+        setMovies((prevMovies) => [...prevMovies, ...newMovies]);
+        setLoading(false);
+      }
     };
 
     loadMovies();

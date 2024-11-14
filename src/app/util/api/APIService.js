@@ -11,10 +11,19 @@ export const fetchMovies = async (category) => {
       url = `${baseUrl}/movie/popular?api_key=${API_KEY}`;
       break;
     case 'new_releases':
-      url = `${baseUrl}/movie/latest?api_key=${API_KEY}`;
+      url = `${baseUrl}/movie/now_playing?api_key=${API_KEY}`; // 최신 영화 목록 엔드포인트
       break;
     case 'action':
       url = `${baseUrl}/discover/movie?api_key=${API_KEY}&with_genres=28`; // 액션 영화 장르 ID는 28
+      break;
+    case 'drama':
+      url = `${baseUrl}/discover/movie?api_key=${API_KEY}&with_genres=18`; // 드라마 영화 장르 ID는 18
+      break;
+    case 'comedy':
+      url = `${baseUrl}/discover/movie?api_key=${API_KEY}&with_genres=35`; // 코미디 영화 장르 ID는 35
+      break;
+    case 'horror':
+      url = `${baseUrl}/discover/movie?api_key=${API_KEY}&with_genres=27`; // 공포 영화 장르 ID는 27
       break;
     default:
       url = `${baseUrl}/movie/popular?api_key=${API_KEY}`;

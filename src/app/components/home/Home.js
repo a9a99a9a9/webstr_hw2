@@ -8,6 +8,9 @@ function Home() {
   const [popularMovies, setPopularMovies] = useState([]);
   const [newReleases, setNewReleases] = useState([]);
   const [actionMovies, setActionMovies] = useState([]);
+  const [dramaMovies, setDramaMovies] = useState([]); // 드라마 영화 상태 추가
+  const [comedyMovies, setComedyMovies] = useState([]); // 코미디 영화 상태 추가
+  const [horrorMovies, setHorrorMovies] = useState([]); // 공포 영화 상태 추가
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null); // 선택된 영화
@@ -22,12 +25,18 @@ function Home() {
     Promise.all([
       fetchMovies('popular'),
       fetchMovies('new_releases'),
-      fetchMovies('action')
+      fetchMovies('action'),
+      fetchMovies('drama'), // 드라마 영화 데이터 추가
+      fetchMovies('comedy'), // 코미디 영화 데이터 추가
+      fetchMovies('horror'), // 공포 영화 데이터 추가
     ])
-      .then(([popular, newRelease, action]) => {
+      .then(([popular, newRelease, action, drama, comedy, horror]) => {
         setPopularMovies(popular);
         setNewReleases(newRelease);
         setActionMovies(action);
+        setDramaMovies(drama); // 드라마 영화 데이터 설정
+        setComedyMovies(comedy); // 코미디 영화 데이터 설정
+        setHorrorMovies(horror); // 공포 영화 데이터 설정
         setLoading(false);
       })
       .catch((error) => {
@@ -77,9 +86,42 @@ function Home() {
         />
       )}
       {/* MovieRow 컴포넌트에 영화 데이터 전달 */}
-      <MovieRow title="인기 영화" fetchMovies={fetchMovies} movies={popularMovies} onPosterClick={openModal} />
-      <MovieRow title="최신 영화" fetchMovies={fetchMovies} movies={newReleases} onPosterClick={openModal} />
-      <MovieRow title="액션 영화" fetchMovies={fetchMovies} movies={actionMovies} onPosterClick={openModal} />
+      <MovieRow 
+        title="인기 영화" 
+        movies={popularMovies || []} // 인기 영화 목록 전달
+        fetchMovies={(page) => fetchMovies('popular', page)} // 페이지별 인기 영화 불러오기 함수
+        onPosterClick={openModal} 
+      />
+      <MovieRow 
+        title="최신 영화" 
+        movies={newReleases || []} // 최신 영화 목록 전달
+        fetchMovies={(page) => fetchMovies('new_releases', page)} // 페이지별 최신 영화 불러오기 함수
+        onPosterClick={openModal} 
+      />
+      <MovieRow 
+        title="액션 영화" 
+        movies={actionMovies || []} // 액션 영화 목록 전달
+        fetchMovies={(page) => fetchMovies('action', page)} // 페이지별 액션 영화 불러오기 함수
+        onPosterClick={openModal} 
+      />
+      <MovieRow 
+        title="드라마 영화" 
+        movies={dramaMovies || []} // 드라마 영화 목록 전달
+        fetchMovies={(page) => fetchMovies('drama', page)} // 페이지별 드라마 영화 불러오기 함수
+        onPosterClick={openModal} 
+      />
+      <MovieRow 
+        title="코미디 영화" 
+        movies={comedyMovies || []} // 코미디 영화 목록 전달
+        fetchMovies={(page) => fetchMovies('comedy', page)} // 페이지별 코미디 영화 불러오기 함수
+        onPosterClick={openModal} 
+      />
+      <MovieRow 
+        title="공포 영화" 
+        movies={horrorMovies || []} // 공포 영화 목록 전달
+        fetchMovies={(page) => fetchMovies('horror', page)} // 페이지별 공포 영화 불러오기 함수
+        onPosterClick={openModal} 
+      />
     </div>
   );
 }
