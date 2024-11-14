@@ -12,18 +12,16 @@ function App() {
   // 로그인 상태 관리
   useEffect(() => {
     const email = localStorage.getItem('email');
-    const password = localStorage.getItem('password');
-    if (email && password) {
-      setIsAuthenticated(true);
+    if (email) {
+      setIsAuthenticated(true); // 이메일이 있으면 로그인된 상태로 처리
     } else {
-      setIsAuthenticated(false);
+      setIsAuthenticated(false); // 로그인되지 않으면 로그아웃 상태로 처리
     }
-  }, []); // 초기 로드 시 한번만 실행되도록 설정
+  }, []);
 
   // 로그아웃 처리 함수 (로그아웃 시 인증 상태 초기화)
   const handleLogout = () => {
     localStorage.removeItem('email');
-    localStorage.removeItem('password');
     setIsAuthenticated(false); // 인증 상태 변경
   };
 

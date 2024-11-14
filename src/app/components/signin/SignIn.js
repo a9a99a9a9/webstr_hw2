@@ -9,22 +9,27 @@ const SignIn = ({ setIsAuthenticated }) => {
   const [isLoginVisible, setIsLoginVisible] = useState(true);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
-  
+
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태 추가
 
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const registeredUser = JSON.parse(localStorage.getItem('registeredUser'));
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    const foundUser = registeredUsers.find(
+      (user) => user.email === email && user.password === password
+    );
 
-    if (registeredUser && email === registeredUser.email && password === registeredUser.password) {
+    if (foundUser) {
       setIsAuthenticated(true);
+      localStorage.setItem('email', email); // 로그인된 이메일을 로컬스토리지에 저장
       navigate('/');
     } else {
-      alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+      setErrorMessage('아이디 또는 비밀번호가 일치하지 않습니다.');
     }
   };
 
@@ -32,16 +37,32 @@ const SignIn = ({ setIsAuthenticated }) => {
     e.preventDefault();
 
     if (registerPassword !== confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다.');
+      setErrorMessage('비밀번호가 일치하지 않습니다.');
       return;
     }
 
     if (registerEmail && registerPassword) {
-      localStorage.setItem('registeredUser', JSON.stringify({ email: registerEmail, password: registerPassword }));
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+
+      // 이메일 중복 확인
+      const isEmailTaken = registeredUsers.some(
+        (user) => user.email === registerEmail
+      );
+
+      if (isEmailTaken) {
+        setErrorMessage('이미 사용 중인 이메일입니다.');
+        return;
+      }
+
+      const newUser = { email: registerEmail, password: registerPassword };
+      registeredUsers.push(newUser);
+      localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+
+      setErrorMessage('');
       alert('회원가입이 완료되었습니다. 이제 로그인할 수 있습니다.');
       toggleCard();
     } else {
-      alert('모든 필드를 입력해 주세요.');
+      setErrorMessage('모든 필드를 입력해 주세요.');
     }
   };
 
@@ -57,6 +78,11 @@ const SignIn = ({ setIsAuthenticated }) => {
 
   const toggleCard = () => {
     setIsLoginVisible(!isLoginVisible);
+  };
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   return (
@@ -79,6 +105,7 @@ const SignIn = ({ setIsAuthenticated }) => {
                     onBlur={() => blurInput('email')}
                   />
                   <label htmlFor="email">Username or Email</label>
+                  {!isValidEmail(email) && email && <span className="error-message">이메일 형식이 올바르지 않습니다.</span>}
                 </div>
                 <div className={`input ${isPasswordFocused || password ? 'active' : ''}`}>
                   <input
@@ -91,6 +118,7 @@ const SignIn = ({ setIsAuthenticated }) => {
                   />
                   <label htmlFor="password">Password</label>
                 </div>
+                {errorMessage && <div className="error-message">{errorMessage}</div>}
                 <span className="checkbox remember">
                   <input
                     type="checkbox"
@@ -103,7 +131,7 @@ const SignIn = ({ setIsAuthenticated }) => {
                 <span className="checkbox forgot">
                   <a href="#">Forgot Password?</a>
                 </span>
-                <button type="submit" disabled={!email || !password}>Login</button>
+                <button type="submit" disabled={!email || !password || !isValidEmail(email)}>Login</button>
               </form>
               <a href="javascript:void(0)" className="account-check" onClick={toggleCard}>
                 Don't have an account? <b>Sign up</b>
@@ -148,6 +176,7 @@ const SignIn = ({ setIsAuthenticated }) => {
                   <input type="checkbox" id="terms" />
                   <label htmlFor="terms" className="read-text">I have read the Terms and Conditions</label>
                 </span>
+                {errorMessage && <div className="error-message">{errorMessage}</div>}
                 <button type="submit">Register</button>
               </form>
               <a href="javascript:void(0)" className="account-check" onClick={toggleCard}>
