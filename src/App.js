@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { CSSTransition, TransitionGroup } from 'react-transition-group'; // react-transition-group import
 import Home from './app/components/home/Home';
 import Header from './app/layout/header/Header';
 import SignIn from './app/components/signin/SignIn';
-import './App.css';
+import './App.css'; // 애니메이션 관련 스타일 파일 추가
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,11 +30,17 @@ function App() {
   return (
     <Router>
       <Header setIsAuthenticated={setIsAuthenticated} handleLogout={handleLogout} /> {/* 로그아웃 함수 전달 */}
-      <Routes>
-        {/* 로그인 상태에 따라 렌더링 */}
-        <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
-        <Route path="/signin" element={isAuthenticated ? <Navigate to="/" /> : <SignIn setIsAuthenticated={setIsAuthenticated} />} />
-      </Routes>
+      
+      {/* 페이지 전환에 Transition 효과 추가 */}
+      <TransitionGroup>
+        <CSSTransition timeout={300} classNames="fade" unmountOnExit>
+          <Routes>
+            {/* 로그인 상태에 따라 렌더링 */}
+            <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
+            <Route path="/signin" element={isAuthenticated ? <Navigate to="/" /> : <SignIn setIsAuthenticated={setIsAuthenticated} />} />
+          </Routes>
+        </CSSTransition>
+      </TransitionGroup>
     </Router>
   );
 }
