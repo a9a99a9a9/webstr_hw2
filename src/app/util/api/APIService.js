@@ -1,10 +1,8 @@
-// src/util/api/APIService.js
 export const fetchMovies = async (category) => {
   const API_KEY = '7bd1ba614e1eca467c9c659df3f40e8b'; // API 키
   const baseUrl = 'https://api.themoviedb.org/3';
   let url = '';
 
-  
   // 각 카테고리에 맞는 URL 설정
   switch (category) {
     case 'popular':
@@ -37,9 +35,19 @@ export const fetchMovies = async (category) => {
 export const fetchMovieDetails = async (movieId) => {
   const API_KEY = '7bd1ba614e1eca467c9c659df3f40e8b'; // API 키
   const baseUrl = 'https://api.themoviedb.org/3';
-  const url = `${baseUrl}/movie/${movieId}?api_key=${API_KEY}`; // 특정 영화의 상세 정보를 가져오는 URL
+  
+  // 영화의 상세 정보 가져오기
+  const movieDetailsUrl = `${baseUrl}/movie/${movieId}?api_key=${API_KEY}`;
+  const responseDetails = await fetch(movieDetailsUrl);
+  const movieDetails = await responseDetails.json();
 
-  const response = await fetch(url);
-  const data = await response.json();
-  return data; // 영화의 상세 정보를 반환
+  // 예고편 정보 가져오기
+  const videoUrl = `${baseUrl}/movie/${movieId}/videos?api_key=${API_KEY}`;
+  const responseVideos = await fetch(videoUrl);
+  const videoData = await responseVideos.json();
+
+  // 예고편 정보 중 첫 번째 것을 반환
+  const trailer = videoData.results.find(video => video.type === 'Trailer');
+
+  return { ...movieDetails, trailer }; // 상세 정보와 예고편을 함께 반환
 };
