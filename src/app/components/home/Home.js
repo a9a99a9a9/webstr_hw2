@@ -6,19 +6,18 @@ import { fetchMovies } from '../../util/api/APIService';
 import { CSSTransition } from 'react-transition-group'; // 애니메이션을 위한 import
 
 function Home() {
-  const [movies, setMovies] = useState({
-    popular: [],
-    new_releases: [],
-    action: [],
-    drama: [],
-    comedy: [],
-    horror: [],
-  });
+  const [popularMovies, setPopularMovies] = useState([]);
+  const [new_releasesMovies, setNewReleases] = useState([]);
+  const [actionMovies, setActionMovies] = useState([]);
+  const [dramaMovies, setDramaMovies] = useState([]); // 드라마 영화 상태 추가
+  const [comedyMovies, setComedyMovies] = useState([]); // 코미디 영화 상태 추가
+  const [horrorMovies, setHorrorMovies] = useState([]); // 공포 영화 상태 추가
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null); // 선택된 영화
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열기 상태
   const [wishlist, setWishlist] = useState([]); // 찜 목록 상태
+  const [recommendedMovies, setRecommendedMovies] = useState([]); // 추천 영화 상태
 
   // 랜덤 정렬 함수 (Fisher-Yates 알고리즘)
   const shuffleArray = (array) => {
@@ -44,14 +43,12 @@ function Home() {
       fetchMovies('horror'), // 공포 영화 데이터 추가
     ])
       .then(([popular, newRelease, action, drama, comedy, horror]) => {
-        setMovies({
-          popular: shuffleArray(popular),
-          new_releases: shuffleArray(newRelease),
-          action: shuffleArray(action),
-          drama: shuffleArray(drama),
-          comedy: shuffleArray(comedy),
-          horror: shuffleArray(horror),
-        });
+        setPopularMovies(shuffleArray(popular)); // 랜덤 정렬 적용
+        setNewReleases(shuffleArray(newRelease)); // 랜덤 정렬 적용
+        setActionMovies(shuffleArray(action)); // 랜덤 정렬 적용
+        setDramaMovies(shuffleArray(drama)); // 랜덤 정렬 적용
+        setComedyMovies(shuffleArray(comedy)); // 랜덤 정렬 적용
+        setHorrorMovies(shuffleArray(horror)); // 랜덤 정렬 적용
         setLoading(false);
       })
       .catch((error) => {
@@ -63,6 +60,11 @@ function Home() {
     // localStorage에서 찜 목록 불러오기
     const storedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
     setWishlist(storedWishlist);
+
+    // 추천 영화 불러오기
+    const storedRecommendedMovies = JSON.parse(localStorage.getItem('recommendedMovies')) || [];
+    setRecommendedMovies(storedRecommendedMovies);
+
   }, []);
 
   const openModal = (movie) => {
@@ -81,6 +83,22 @@ function Home() {
       localStorage.setItem('wishlist', JSON.stringify(newWishlist)); // 찜 목록을 localStorage에 저장
       closeModal(); // 찜 후 모달 닫기
     }
+  };
+
+  const toggleRecommendedMovie = (movie) => {
+    let updatedRecommendedMovies = [...recommendedMovies];
+    const index = updatedRecommendedMovies.findIndex((m) => m.id === movie.id);
+
+    if (index > -1) {
+      // 이미 추천된 영화가 있다면 삭제
+      updatedRecommendedMovies.splice(index, 1);
+    } else {
+      // 추천 목록에 추가
+      updatedRecommendedMovies.push(movie);
+    }
+
+    setRecommendedMovies(updatedRecommendedMovies);
+    localStorage.setItem('recommendedMovies', JSON.stringify(updatedRecommendedMovies)); // 추천 영화 저장
   };
 
   if (loading) {
@@ -106,15 +124,29 @@ function Home() {
         />
       </CSSTransition>
 
-      {/* 각 카테고리별로 개별 스크롤 적용 */}
-      {Object.keys(movies).map((category) => (
+      {/* 추천 영화 섹션 */}
+      <div className="recommended-movies">
+        <h2>추천 영화</h2>
+        <div className="movie-row-container">
+          {recommendedMovies.map((movie) => (
+            <div key={movie.id} className="movie-poster" onClick={() => toggleRecommendedMovie(movie)}>
+              <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+              <p>{movie.title}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 영화 목록 렌더링 */}
+      {['popular', 'new_releases', 'action', 'drama', 'comedy', 'horror'].map((category) => (
         <div key={category} className="movie-row">
           <h2>{category === 'popular' ? '인기 영화' : category === 'new_releases' ? '최신 영화' : category === 'action' ? '액션 영화' : category === 'drama' ? '드라마 영화' : category === 'comedy' ? '코미디 영화' : '공포 영화'}</h2>
           <div className="movie-row-container">
             <MovieRow 
-              movies={movies[category] || []} 
+              movies={eval(`${category}Movies`)} // 동적으로 각 영화 상태 사용
               fetchMovies={(page) => fetchMovies(category, page)} 
               onPosterClick={openModal} 
+              onPosterClickRecommended={toggleRecommendedMovie}
             />
           </div>
         </div>
