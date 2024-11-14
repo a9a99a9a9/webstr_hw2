@@ -1,35 +1,63 @@
 /* src/app/components/home/Home.css */
 .home {
-    padding: 20px;
-    background-color: #111;
-    margin-top: 50px;
-  }
-  
+  padding: 20px;
+  background-color: #111;
+  margin-top: 50px;
+}
 
-  .movie-row {
-    margin-bottom: 30px;
-  }
-  
-  .movie-row h2 {
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-  }
-  
-  .movie-row__posters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .movie-row__poster {
-    width: 150px;
-    height: 225px;
-    object-fit: cover;
-    transition: transform 0.3s;
-  }
-  
-  .movie-row__poster:hover {
-    transform: scale(1.1);
-  }
-  
+.movie-row {
+  margin-bottom: 30px;
+}
+
+.movie-row h2 {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* 각 카테고리별 영화 포스터를 한 줄로 나열할 수 있도록 설정 */
+.movie-row-container {
+  display: flex;
+  overflow-x: auto; /* 가로 스크롤 허용 */
+  scroll-behavior: smooth; /* 부드럽게 스크롤 */
+  gap: 10px;
+  padding: 10px 0; /* 위 아래 여백 추가 */
+  width: 100%;
+}
+
+.movie-row__posters {
+  display: flex;
+  gap: 10px;
+}
+
+.movie-row__poster {
+  width: 150px;
+  height: 225px;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+/* 포스터에 마우스를 올렸을 때 확대 효과 */
+.movie-row__poster:hover {
+  transform: scale(1.1);
+}
+
+/* 스크롤바 색상 및 스타일 */
+.movie-row-container::-webkit-scrollbar {
+  width: 8px; /* 스크롤바 너비 */
+  height: 8px; /* 수평 스크롤바 높이 */
+}
+
+.movie-row-container::-webkit-scrollbar-thumb {
+  background-color: black; /* 스크롤바 색상 (토마토색) */
+  border-radius: 10px;
+}
+
+.movie-row-container::-webkit-scrollbar-track {
+  background-color: #333; /* 스크롤 트랙 색상 */
+  border-radius: 10px;
+}
+
+.movie-row-container::-webkit-scrollbar-thumb:hover {
+  background-color: #ff4500; /* 스크롤바 색상 (hover 시) */
+}
