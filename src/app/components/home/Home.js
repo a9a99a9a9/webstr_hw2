@@ -17,6 +17,16 @@ function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열기 상태
   const [wishlist, setWishlist] = useState([]); // 찜 목록 상태
 
+  // 랜덤 정렬 함수 (Fisher-Yates 알고리즘)
+  const shuffleArray = (array) => {
+    const shuffled = [...array]; // 원본 배열을 건드리지 않기 위해 복사
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // 두 요소를 교환
+    }
+    return shuffled;
+  };
+
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -31,12 +41,12 @@ function Home() {
       fetchMovies('horror'), // 공포 영화 데이터 추가
     ])
       .then(([popular, newRelease, action, drama, comedy, horror]) => {
-        setPopularMovies(popular);
-        setNewReleases(newRelease);
-        setActionMovies(action);
-        setDramaMovies(drama); // 드라마 영화 데이터 설정
-        setComedyMovies(comedy); // 코미디 영화 데이터 설정
-        setHorrorMovies(horror); // 공포 영화 데이터 설정
+        setPopularMovies(shuffleArray(popular)); // 랜덤 정렬 적용
+        setNewReleases(shuffleArray(newRelease)); // 랜덤 정렬 적용
+        setActionMovies(shuffleArray(action)); // 랜덤 정렬 적용
+        setDramaMovies(shuffleArray(drama)); // 랜덤 정렬 적용
+        setComedyMovies(shuffleArray(comedy)); // 랜덤 정렬 적용
+        setHorrorMovies(shuffleArray(horror)); // 랜덤 정렬 적용
         setLoading(false);
       })
       .catch((error) => {
@@ -85,43 +95,72 @@ function Home() {
           onAddToWishlist={addToWishlist}
         />
       )}
-      {/* MovieRow 컴포넌트에 영화 데이터 전달 */}
-      <MovieRow 
-        title="인기 영화" 
-        movies={popularMovies || []} // 인기 영화 목록 전달
-        fetchMovies={(page) => fetchMovies('popular', page)} // 페이지별 인기 영화 불러오기 함수
-        onPosterClick={openModal} 
-      />
-      <MovieRow 
-        title="최신 영화" 
-        movies={newReleases || []} // 최신 영화 목록 전달
-        fetchMovies={(page) => fetchMovies('new_releases', page)} // 페이지별 최신 영화 불러오기 함수
-        onPosterClick={openModal} 
-      />
-      <MovieRow 
-        title="액션 영화" 
-        movies={actionMovies || []} // 액션 영화 목록 전달
-        fetchMovies={(page) => fetchMovies('action', page)} // 페이지별 액션 영화 불러오기 함수
-        onPosterClick={openModal} 
-      />
-      <MovieRow 
-        title="드라마 영화" 
-        movies={dramaMovies || []} // 드라마 영화 목록 전달
-        fetchMovies={(page) => fetchMovies('drama', page)} // 페이지별 드라마 영화 불러오기 함수
-        onPosterClick={openModal} 
-      />
-      <MovieRow 
-        title="코미디 영화" 
-        movies={comedyMovies || []} // 코미디 영화 목록 전달
-        fetchMovies={(page) => fetchMovies('comedy', page)} // 페이지별 코미디 영화 불러오기 함수
-        onPosterClick={openModal} 
-      />
-      <MovieRow 
-        title="공포 영화" 
-        movies={horrorMovies || []} // 공포 영화 목록 전달
-        fetchMovies={(page) => fetchMovies('horror', page)} // 페이지별 공포 영화 불러오기 함수
-        onPosterClick={openModal} 
-      />
+      {/* 각 카테고리별로 개별 스크롤 적용 */}
+      <div className="movie-row">
+        <h2>인기 영화</h2>
+        <div className="movie-row-container">
+          <MovieRow 
+            movies={popularMovies || []} 
+            fetchMovies={(page) => fetchMovies('popular', page)} 
+            onPosterClick={openModal} 
+          />
+        </div>
+      </div>
+
+      <div className="movie-row">
+        <h2>최신 영화</h2>
+        <div className="movie-row-container">
+          <MovieRow 
+            movies={newReleases || []} 
+            fetchMovies={(page) => fetchMovies('new_releases', page)} 
+            onPosterClick={openModal} 
+          />
+        </div>
+      </div>
+
+      <div className="movie-row">
+        <h2>액션 영화</h2>
+        <div className="movie-row-container">
+          <MovieRow 
+            movies={actionMovies || []} 
+            fetchMovies={(page) => fetchMovies('action', page)} 
+            onPosterClick={openModal} 
+          />
+        </div>
+      </div>
+
+      <div className="movie-row">
+        <h2>드라마 영화</h2>
+        <div className="movie-row-container">
+          <MovieRow 
+            movies={dramaMovies || []} 
+            fetchMovies={(page) => fetchMovies('drama', page)} 
+            onPosterClick={openModal} 
+          />
+        </div>
+      </div>
+
+      <div className="movie-row">
+        <h2>코미디 영화</h2>
+        <div className="movie-row-container">
+          <MovieRow 
+            movies={comedyMovies || []} 
+            fetchMovies={(page) => fetchMovies('comedy', page)} 
+            onPosterClick={openModal} 
+          />
+        </div>
+      </div>
+
+      <div className="movie-row">
+        <h2>공포 영화</h2>
+        <div className="movie-row-container">
+          <MovieRow 
+            movies={horrorMovies || []} 
+            fetchMovies={(page) => fetchMovies('horror', page)} 
+            onPosterClick={openModal} 
+          />
+        </div>
+      </div>
     </div>
   );
 }
