@@ -5,29 +5,31 @@ import './Home.css';
 import { fetchMovies } from '../../util/api/APIService';
 import { CSSTransition } from 'react-transition-group'; // 애니메이션을 위한 import
 
+// shuffleArray 함수 정의
+const shuffleArray = (array) => {
+  const shuffled = [...array]; // 원본 배열을 건드리지 않기 위해 복사
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // 두 요소를 교환
+  }
+  return shuffled;
+};
+
 function Home() {
   const [popularMovies, setPopularMovies] = useState([]);
   const [new_releasesMovies, setNewReleases] = useState([]);
   const [actionMovies, setActionMovies] = useState([]);
-  const [dramaMovies, setDramaMovies] = useState([]); // 드라마 영화 상태 추가
-  const [comedyMovies, setComedyMovies] = useState([]); // 코미디 영화 상태 추가
-  const [horrorMovies, setHorrorMovies] = useState([]); // 공포 영화 상태 추가
+  const [dramaMovies, setDramaMovies] = useState([]);
+  const [comedyMovies, setComedyMovies] = useState([]);
+  const [horrorMovies, setHorrorMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedMovie, setSelectedMovie] = useState(null); // 선택된 영화
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열기 상태
-  const [wishlist, setWishlist] = useState([]); // 찜 목록 상태
-  const [recommendedMovies, setRecommendedMovies] = useState([]); // 추천 영화 상태
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
+  const [recommendedMovies, setRecommendedMovies] = useState([]);
 
-  // 랜덤 정렬 함수
-  const shuffleArray = (array) => {
-    const shuffled = [...array]; // 원본 배열을 건드리지 않기 위해 복사
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // 두 요소를 교환
-    }
-    return shuffled;
-  };
+  const currentUserEmail = localStorage.getItem('email'); // 현재 로그인된 사용자 이메일
 
   useEffect(() => {
     setLoading(true);
@@ -38,17 +40,17 @@ function Home() {
       fetchMovies('popular'),
       fetchMovies('new_releases'),
       fetchMovies('action'),
-      fetchMovies('drama'), // 드라마 영화 데이터 추가
-      fetchMovies('comedy'), // 코미디 영화 데이터 추가
-      fetchMovies('horror'), // 공포 영화 데이터 추가
+      fetchMovies('drama'),
+      fetchMovies('comedy'),
+      fetchMovies('horror'),
     ])
       .then(([popular, newRelease, action, drama, comedy, horror]) => {
-        setPopularMovies(shuffleArray(popular)); // 랜덤 정렬 적용
-        setNewReleases(shuffleArray(newRelease)); // 랜덤 정렬 적용
-        setActionMovies(shuffleArray(action)); // 랜덤 정렬 적용
-        setDramaMovies(shuffleArray(drama)); // 랜덤 정렬 적용
-        setComedyMovies(shuffleArray(comedy)); // 랜덤 정렬 적용
-        setHorrorMovies(shuffleArray(horror)); // 랜덤 정렬 적용
+        setPopularMovies(shuffleArray(popular));
+        setNewReleases(shuffleArray(newRelease));
+        setActionMovies(shuffleArray(action));
+        setDramaMovies(shuffleArray(drama));
+        setComedyMovies(shuffleArray(comedy));
+        setHorrorMovies(shuffleArray(horror));
         setLoading(false);
       })
       .catch((error) => {
@@ -57,31 +59,31 @@ function Home() {
         console.error(error);
       });
 
-    // localStorage에서 찜 목록 불러오기
-    const storedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    // localStorage에서 현재 사용자 찜 목록 불러오기
+    const storedWishlist = JSON.parse(localStorage.getItem(`wishlist_${currentUserEmail}`)) || [];
     setWishlist(storedWishlist);
 
-    // 추천 영화 불러오기
-    const storedRecommendedMovies = JSON.parse(localStorage.getItem('recommendedMovies')) || [];
+    // localStorage에서 현재 사용자 추천 영화 불러오기
+    const storedRecommendedMovies = JSON.parse(localStorage.getItem(`recommendedMovies_${currentUserEmail}`)) || [];
     setRecommendedMovies(storedRecommendedMovies);
 
-  }, []);
+  }, [currentUserEmail]);
 
   const openModal = (movie) => {
-    setSelectedMovie(movie); // 선택된 영화 정보 저장
-    setIsModalOpen(true); // 모달 열기
+    setSelectedMovie(movie);
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    setIsModalOpen(false); // 모달 닫기
+    setIsModalOpen(false);
   };
 
   const addToWishlist = () => {
     if (selectedMovie && !wishlist.some((movie) => movie.id === selectedMovie.id)) {
       const newWishlist = [...wishlist, selectedMovie];
       setWishlist(newWishlist);
-      localStorage.setItem('wishlist', JSON.stringify(newWishlist)); // 찜 목록을 localStorage에 저장
-      closeModal(); // 찜 후 모달 닫기
+      localStorage.setItem(`wishlist_${currentUserEmail}`, JSON.stringify(newWishlist)); // 사용자별 찜 목록을 localStorage에 저장
+      closeModal();
     }
   };
 
@@ -98,7 +100,7 @@ function Home() {
     }
 
     setRecommendedMovies(updatedRecommendedMovies);
-    localStorage.setItem('recommendedMovies', JSON.stringify(updatedRecommendedMovies)); // 추천 영화 저장
+    localStorage.setItem(`recommendedMovies_${currentUserEmail}`, JSON.stringify(updatedRecommendedMovies)); // 사용자별 추천 영화 저장
   };
 
   if (loading) {
