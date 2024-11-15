@@ -61,7 +61,7 @@ const Header = ({ setIsAuthenticated }) => {
             <ul>
               <li><Link to="/">홈</Link></li>
               <li><Link to="/popular">대세 콘텐츠</Link></li>
-              <li><Link to="/wishlist">내가 찜한 리스트 ({wishlistCount})</Link></li>
+              <li><Link to="/wishlist">내가 찜한 리스트 </Link></li>
               <li><Link to="/search">찾아보기</Link></li>
             </ul>
           </nav>
@@ -89,7 +89,7 @@ const Header = ({ setIsAuthenticated }) => {
           <ul>
             <li><Link to="/" onClick={toggleMobileMenu}>홈</Link></li>
             <li><Link to="/popular" onClick={toggleMobileMenu}>대세 콘텐츠</Link></li>
-            <li><Link to="/wishlist" onClick={toggleMobileMenu}>내가 찜한 리스트 ({wishlistCount})</Link></li>
+            <li><Link to="/wishlist" onClick={toggleMobileMenu}>내가 찜한 리스트 </Link></li>
             <li><Link to="/search" onClick={toggleMobileMenu}>찾아보기</Link></li>
           </ul>
         </nav>
