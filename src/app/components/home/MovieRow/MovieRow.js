@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './MovieRow.css';
 
-function MovieRow({ title, movies: initialMovies, fetchMovies, onPosterClick }) {
+function MovieRow({ title, movies: initialMovies, fetchMovies, onPosterClick, onPosterClickRecommended }) {
   const [movies, setMovies] = useState(initialMovies); // 초기 movies 사용
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -44,7 +44,12 @@ function MovieRow({ title, movies: initialMovies, fetchMovies, onPosterClick }) 
             <div 
               key={movie.id} 
               className="movie-row__poster" 
-              onClick={() => onPosterClick(movie)} // 클릭 시 openModal 호출
+              onClick={() => {
+                onPosterClick(movie); // 클릭 시 openModal 호출
+                if (onPosterClickRecommended) {
+                  onPosterClickRecommended(movie); // 추천 영화 목록에 추가/삭제
+                }
+              }}
             >
               <img
                 src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
