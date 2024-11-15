@@ -8,6 +8,7 @@ const Wishlist = () => {
   const [hasMore, setHasMore] = useState(true);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recommendedMovies, setRecommendedMovies] = useState([]);
 
   const currentUserEmail = localStorage.getItem('email'); // 현재 로그인된 사용자 이메일
 
@@ -15,6 +16,10 @@ const Wishlist = () => {
     // localStorage에서 현재 사용자 찜 목록 불러오기
     const storedWishlist = JSON.parse(localStorage.getItem(`wishlist_${currentUserEmail}`)) || [];
     setWishlist(storedWishlist);
+
+    // localStorage에서 현재 사용자 추천 영화 불러오기
+    const storedRecommendedMovies = JSON.parse(localStorage.getItem(`recommendedMovies_${currentUserEmail}`)) || [];
+    setRecommendedMovies(storedRecommendedMovies);
   }, [currentUserEmail]);
 
   const removeFromWishlist = (id) => {
@@ -24,14 +29,7 @@ const Wishlist = () => {
   };
 
   const fetchMoreData = () => {
-    if (wishlist.length >= 50) {
-      setHasMore(false);
-      return;
-    }
-    // 더 많은 데이터를 불러오는 로직 (데모를 위해 임의로 설정)
-    setTimeout(() => {
-      setWishlist((prevWishlist) => [...prevWishlist, ...prevWishlist.slice(0, 10)]);
-    }, 1500);
+    setHasMore(false); // 더 이상 데이터를 추가하지 않도록 설정 (중복 방지)
   };
 
   const openModal = (movie) => {
@@ -43,9 +41,28 @@ const Wishlist = () => {
     setIsModalOpen(false);
   };
 
+  const toggleRecommendedMovie = (movie) => {
+    let updatedRecommendedMovies = [...recommendedMovies];
+    const index = updatedRecommendedMovies.findIndex((m) => m.id === movie.id);
+
+    if (index > -1) {
+      // 이미 추천된 영화가 있다면 삭제
+      updatedRecommendedMovies.splice(index, 1);
+    } else {
+      // 추천 목록에 추가
+      updatedRecommendedMovies.push(movie);
+    }
+
+    setRecommendedMovies(updatedRecommendedMovies);
+    localStorage.setItem(`recommendedMovies_${currentUserEmail}`, JSON.stringify(updatedRecommendedMovies)); // 사용자별 추천 영화 저장
+  };
+
   return (
     <div className="wishlist-container">
+
+
       <h1>내가 찜한 리스트</h1>
+
       {wishlist.length === 0 ? (
         <p>위시리스트가 비어있습니다.</p>
       ) : (
@@ -76,7 +93,22 @@ const Wishlist = () => {
       {isModalOpen && selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={closeModal} />
       )}
+
+            {/* 추천 영화 섹션 */}
+            <div className="recommended-movies">
+        <h2>추천 영화</h2>
+        <div className="movie-row-container">
+          {recommendedMovies.map((movie) => (
+            <div key={movie.id} className="movie-poster" onClick={() => openModal(movie)}>
+              <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+              <p>{movie.title}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
+
+    
   );
 };
 
