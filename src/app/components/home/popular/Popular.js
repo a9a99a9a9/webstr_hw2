@@ -67,8 +67,12 @@ const Popular = () => {
   };
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth', // 부드러운 스크롤 이동
+    });
   };
+  
 
   // 테이블 뷰일 때 현재 페이지에 맞는 영화 목록만 가져오기
   const paginatedMovies = movies.slice((currentPage - 1) * moviesPerPage, currentPage * moviesPerPage);
@@ -83,7 +87,7 @@ const Popular = () => {
 
   return (
     <div className="popular-container">
-      <div className="view-toggle">
+      <div className="view-toggle" style={{ marginTop: '80px' }}>{/* 헤더와 겹치지 않도록 위쪽 여백 추가 */}
         <button
           onClick={() => handleViewChange('grid')}
           className={viewType === 'grid' ? 'active' : ''}
@@ -143,7 +147,7 @@ const Popular = () => {
       )}
 
       {viewType === 'list' && (
-        <button className="scroll-to-top" onClick={scrollToTop}>
+        <button className="scroll-to-top" onClick={scrollToTop} style={{ display: movies.length > 0 ? 'block' : 'none' }}>
           <FontAwesomeIcon icon={faArrowUp} /> 맨 위로
         </button>
       )}
