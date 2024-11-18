@@ -136,13 +136,15 @@ const Popular = () => {
         </div>
       )}
 
-      <button
-        className="scroll-to-top"
-        onClick={scrollToTop}
-        style={{ display: movies.length > 0 || loading ? 'block' : 'none' }}
-      >
-        <FontAwesomeIcon icon={faArrowUp} /> 맨 위로
-      </button>
+      {viewType === 'list' && (
+        <button
+          className="scroll-to-top"
+          onClick={scrollToTop}
+          style={{ display: movies.length > 0 || loading ? 'block' : 'none' }}
+        >
+          <FontAwesomeIcon icon={faArrowUp} /> 맨 위로
+        </button>
+      )}
     </div>
   );
 };

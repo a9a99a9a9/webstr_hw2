@@ -44,7 +44,7 @@
   justify-content: flex-end;
   margin-bottom: 30px;
   position: fixed; /* 위치를 고정하여 화면에 항상 보이도록 수정 */
-  top: 80px; /* 위치를 조금 더 내려서 헤더와 겹치지 않도록 조정 */
+  top: 20px; /* 위치를 조금 더 내려서 헤더와 겹치지 않도록 조정 */
   right: 20px; /* 오른쪽 위에 고정 */
   z-index: 100; /* 헤더와 겹치지 않도록 z-index 설정 */
 }
