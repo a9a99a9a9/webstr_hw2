@@ -115,6 +115,13 @@
     cursor: pointer;
   }
   
+  .user-email {
+    color: white; /* 글씨 색상을 흰색으로 설정 */
+    font-weight: bold; /* 글씨 굵기 설정 */
+    margin-right: 10px; /* 오른쪽 여백 추가 */
+  }
+  
+
   @media (max-width: 768px) {
     .desktop-nav {
       display: none;

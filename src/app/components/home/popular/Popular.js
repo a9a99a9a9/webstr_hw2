@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import MovieModal from '../movie-modal/MovieModal';
 import './Popular.css';
@@ -16,7 +16,8 @@ const Popular = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewType, setViewType] = useState('grid');
 
-  const currentUserEmail = localStorage.getItem('email');
+  const containerRef = useRef(null); // 전체 popular-container 참조
+  const movieListRef = useRef(null); // movie-list-container 참조
   const moviesPerPage = 10; // 페이지당 표시할 영화 수
 
   useEffect(() => {
@@ -52,9 +53,9 @@ const Popular = () => {
   const handleViewChange = (view) => {
     setViewType(view);
     if (view === 'grid') {
-      document.querySelector('.popular-container').style.overflow = 'hidden';
+      containerRef.current.style.overflow = 'hidden';
     } else {
-      document.querySelector('.popular-container').style.overflow = 'auto';
+      containerRef.current.style.overflow = 'auto';
     }
   };
 
@@ -67,27 +68,16 @@ const Popular = () => {
   };
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth', // 부드러운 스크롤 이동
-    });
+    if (movieListRef.current) {
+      movieListRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
-  
 
-  // 테이블 뷰일 때 현재 페이지에 맞는 영화 목록만 가져오기
   const paginatedMovies = movies.slice((currentPage - 1) * moviesPerPage, currentPage * moviesPerPage);
 
-  if (loading && currentPage === 1) {
-    return <div>로딩 중...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   return (
-    <div className="popular-container">
-      <div className="view-toggle" style={{ marginTop: '80px' }}>{/* 헤더와 겹치지 않도록 위쪽 여백 추가 */}
+    <div ref={containerRef} className="popular-container">
+      <div className="view-toggle" style={{ marginTop: '80px' }}>
         <button
           onClick={() => handleViewChange('grid')}
           className={viewType === 'grid' ? 'active' : ''}
@@ -114,7 +104,7 @@ const Popular = () => {
           loader={<h4>로딩 중...</h4>}
           endMessage={<p>더 이상 영화가 없습니다.</p>}
         >
-          <div className="movie-list-container">
+          <div ref={movieListRef} className="movie-list-container">
             {movies.map((movie) => (
               <div key={movie.id} className="movie-item" onClick={() => openModal(movie)}>
                 <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
@@ -146,11 +136,13 @@ const Popular = () => {
         </div>
       )}
 
-      {viewType === 'list' && (
-        <button className="scroll-to-top" onClick={scrollToTop} style={{ display: movies.length > 0 ? 'block' : 'none' }}>
-          <FontAwesomeIcon icon={faArrowUp} /> 맨 위로
-        </button>
-      )}
+      <button
+        className="scroll-to-top"
+        onClick={scrollToTop}
+        style={{ display: movies.length > 0 || loading ? 'block' : 'none' }}
+      >
+        <FontAwesomeIcon icon={faArrowUp} /> 맨 위로
+      </button>
     </div>
   );
 };

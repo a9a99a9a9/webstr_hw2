@@ -69,10 +69,11 @@ const Header = ({ setIsAuthenticated }) => {
         <div className="header-right">
           {userEmail && ( // 로그인 상태일 때 이메일과 로그아웃 버튼 표시
             <>
-              <span>{userEmail}</span> 
-              <button className="icon-button" onClick={removeKey}>
-                <FontAwesomeIcon icon={faSignOutAlt} /> 로그아웃
-              </button>
+              <span className="user-email">{userEmail}</span>
+<button className="icon-button" onClick={removeKey}>
+  <FontAwesomeIcon icon={faSignOutAlt} /> 로그아웃
+</button>
+
             </>
           )}
           <button className="icon-button mobile-menu-button" onClick={toggleMobileMenu}>
