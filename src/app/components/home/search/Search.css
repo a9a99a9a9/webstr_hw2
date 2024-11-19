@@ -1,0 +1,81 @@
+/* 기본 컨테이너 스타일 */
+.search-container {
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #121212; /* 다크 테마 배경 */
+    color: #ffffff; /* 기본 텍스트 색상 */
+    min-height: 100vh; /* 페이지 전체 높이 */
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  /* 필터 섹션 스타일 */
+  .search-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .search-filters select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .search-filters select:hover {
+    background-color: #007bff;
+    color: #ffffff;
+  }
+  
+  /* 영화 그리드 스타일 */
+  .movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .movie-item {
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .movie-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+  }
+  
+  .movie-item h3 {
+    font-size: 1rem;
+    margin: 0;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .movie-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* 로딩 및 메시지 스타일 */
+  h4, p {
+    text-align: center;
+    margin-top: 20px;
+    color: #ffffff;
+    font-size: 1.2rem;
+  }
+  
