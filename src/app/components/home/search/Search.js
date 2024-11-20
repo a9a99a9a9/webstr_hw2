@@ -111,6 +111,11 @@ const Search = () => {
     setSortId('popularity.desc');
     setPage(1);
     setMovies([]);
+
+    // 필터링 선택 UI 초기화
+    document.querySelector('[name="genre"]').value = '';
+    document.querySelector('[name="age"]').value = '-1';
+    document.querySelector('[name="sort"]').value = 'popularity.desc';
   };
 
   const openModal = async (movieId) => {
