@@ -104,6 +104,15 @@ const Search = () => {
     setMovies([]);
   };
 
+  const resetFilters = () => {
+    setGenreId('');
+    setMinVote(0);
+    setMaxVote(10);
+    setSortId('popularity.desc');
+    setPage(1);
+    setMovies([]);
+  };
+
   const openModal = async (movieId) => {
     try {
       const movieDetails = await fetchMovieDetails(movieId);
@@ -159,6 +168,9 @@ const Search = () => {
           <option value="35">코미디</option>
           <option value="80">범죄</option>
           <option value="18">드라마</option>
+          <option value="27">공포</option>
+          <option value="53">스릴러</option>
+          <option value="10749">로맨스</option>
         </select>
         {/* 평점 필터 */}
         <select name="age" onChange={handleSearchChange}>
@@ -166,12 +178,20 @@ const Search = () => {
           <option value="9">9~10</option>
           <option value="8">8~9</option>
           <option value="7">7~8</option>
+          <option value="6">6~7</option>
+          <option value="5">5~6</option>
+          <option value="4">4~5</option>
+          <option value="0">4점 이하</option>
         </select>
         {/* 정렬 필터 */}
         <select name="sort" onChange={handleSearchChange}>
           <option value="popularity.desc">인기순</option>
           <option value="vote_average.desc">평점순</option>
+          <option value="release_date.desc">최신순</option>
         </select>
+        <button onClick={resetFilters} className="reset-button">
+          초기화
+        </button>
       </div>
 
       <InfiniteScroll
