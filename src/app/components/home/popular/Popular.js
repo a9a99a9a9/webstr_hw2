@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import MovieModal from '../movie-modal/MovieModal';
+import MovieModal from '../movie-modal/MovieModal'; 
 import './Popular.css';
 import { fetchMovies, fetchMovieDetails } from '../../../util/api/APIService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,16 +15,12 @@ const Popular = () => {
   const [viewType, setViewType] = useState('grid');
   const [wishlist, setWishlist] = useState([]);
   const [recommendedMovies, setRecommendedMovies] = useState([]);
-
-  const currentUserEmail = localStorage.getItem('email'); // 현재 사용자 이메일
-
-  const containerRef = useRef(null);
   const movieListRef = useRef(null);
+  const currentUserEmail = localStorage.getItem('email');
+  const moviesPerPage = 12; // 한 페이지에 보여줄 영화 수
 
   useEffect(() => {
-    fetchMoviesData(); // 영화 데이터 로드
-
-    // 로컬 스토리지에서 찜한 영화와 추천 영화 불러오기
+    fetchMoviesData();
     const storedWishlist = JSON.parse(localStorage.getItem(`wishlist_${currentUserEmail}`)) || [];
     const storedRecommendedMovies = JSON.parse(localStorage.getItem(`recommendedMovies_${currentUserEmail}`)) || [];
     setWishlist(storedWishlist);
@@ -34,12 +30,10 @@ const Popular = () => {
   const fetchMoviesData = async () => {
     try {
       const data = await fetchMovies('popular', { page: currentPage });
-
       if (data.length > 0) {
         setMovies((prevMovies) => {
           const allMovies = [...prevMovies, ...data];
-          const uniqueMovies = Array.from(new Map(allMovies.map((movie) => [movie.id, movie])).values());
-          return uniqueMovies;
+          return Array.from(new Map(allMovies.map((movie) => [movie.id, movie])).values());
         });
         setHasMore(true);
       } else {
@@ -58,14 +52,11 @@ const Popular = () => {
     try {
       const movieDetails = await fetchMovieDetails(movieId);
       setSelectedMovie(movieDetails);
-
-      // 추천 영화에 자동 등록
       if (!recommendedMovies.some((m) => m.id === movieId)) {
         const updatedRecommended = [...recommendedMovies, movieDetails];
         setRecommendedMovies(updatedRecommended);
         localStorage.setItem(`recommendedMovies_${currentUserEmail}`, JSON.stringify(updatedRecommended));
       }
-
       setIsModalOpen(true);
     } catch (error) {
       console.error('영화 상세 정보 로드 실패:', error);
@@ -89,9 +80,9 @@ const Popular = () => {
   const handleViewChange = (view) => {
     setViewType(view);
     if (view === 'grid') {
-      containerRef.current.style.overflow = 'hidden';
+      setHasMore(false); // 무한 스크롤 중지
     } else {
-      containerRef.current.style.overflow = 'auto';
+      setHasMore(true); // 무한 스크롤 활성화
     }
   };
 
@@ -101,38 +92,51 @@ const Popular = () => {
     }
   };
 
+  const moviesToShow = movies.slice((currentPage - 1) * moviesPerPage, currentPage * moviesPerPage);
+
   return (
-    <div ref={containerRef} className="popular-container">
-      <div className="view-toggle" style={{ marginTop: '80px' }}>
-        <button
-          onClick={() => handleViewChange('grid')}
-          className={viewType === 'grid' ? 'active' : ''}
-        >
+    <div className="popular-container">
+      <div className="view-toggle">
+        <button onClick={() => handleViewChange('grid')} className={viewType === 'grid' ? 'active' : ''}>
           <FontAwesomeIcon icon={faTh} />
         </button>
-        <button
-          onClick={() => handleViewChange('list')}
-          className={viewType === 'list' ? 'active' : ''}
-        >
+        <button onClick={() => handleViewChange('list')} className={viewType === 'list' ? 'active' : ''}>
           <FontAwesomeIcon icon={faBars} />
         </button>
       </div>
 
       {isModalOpen && selectedMovie && (
-        <MovieModal
-          movie={selectedMovie}
-          onClose={closeModal}
-          onAddToWishlist={addToWishlist}
-        />
+        <MovieModal movie={selectedMovie} onClose={closeModal} onAddToWishlist={addToWishlist} />
       )}
 
-      {viewType === 'list' ? (
+      {viewType === 'grid' ? (
+        <>
+          <div className="movie-grid-container">
+            {moviesToShow.map((movie) => (
+              <div key={movie.id} className="movie-item" onClick={() => openModal(movie.id)}>
+                <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+                <p>{movie.title}</p>
+              </div>
+            ))}
+          </div>
+          <div className="pagination">
+            <button onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))} disabled={currentPage === 1}>
+              이전 페이지
+            </button>
+            <span>{currentPage}</span>
+            <button onClick={loadMoreMovies} disabled={movies.length <= currentPage * moviesPerPage}>
+              다음 페이지
+            </button>
+          </div>
+        </>
+      ) : (
         <InfiniteScroll
           dataLength={movies.length}
           next={loadMoreMovies}
           hasMore={hasMore}
           loader={<h4>로딩 중...</h4>}
           endMessage={<p>더 이상 영화가 없습니다.</p>}
+          scrollableTarget="popular-container"
         >
           <div ref={movieListRef} className="movie-list-container">
             {movies.map((movie) => (
@@ -143,23 +147,10 @@ const Popular = () => {
             ))}
           </div>
         </InfiniteScroll>
-      ) : (
-        <div className="movie-grid-container">
-          {movies.map((movie) => (
-            <div key={movie.id} className="movie-item" onClick={() => openModal(movie.id)}>
-              <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
-              <p>{movie.title}</p>
-            </div>
-          ))}
-        </div>
       )}
 
       {viewType === 'list' && (
-        <button
-          className="scroll-to-top"
-          onClick={scrollToTop}
-          style={{ display: movies.length > 0 ? 'block' : 'none' }}
-        >
+        <button className="scroll-to-top" onClick={scrollToTop}>
           <FontAwesomeIcon icon={faArrowUp} /> 맨 위로
         </button>
       )}
