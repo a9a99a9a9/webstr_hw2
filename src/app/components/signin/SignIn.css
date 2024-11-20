@@ -144,4 +144,18 @@ a.account-check:hover {
   position: relative;
 }
 
-/* 애니메이션을 적용하여 카드 전환 시 부드러운 효과 추가 */
+/* Remember Me 및 약관 동의 텍스트 스타일 */
+.read-text {
+  color: black; /* 텍스트 색상을 검정으로 변경 */
+  font-size: 0.9rem;
+}
+
+.checkbox label {
+  color: black; /* 기본 체크박스 레이블 색상도 검정으로 설정 */
+}
+
+.error-message {
+  color: red; /* 에러 메시지는 여전히 눈에 잘 띄도록 빨간색 유지 */
+  font-size: 0.85rem;
+}
+

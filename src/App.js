@@ -1,36 +1,92 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './app/components/home/Home';
-import Header from './app/layout/header/Header';
 import SignIn from './app/components/signin/SignIn';
+import Popular from './app/components/home/popular/Popular';
+import Search from './app/components/home/search/Search';
 import Wishlist from './app/components/home/wishlist/Wishlist';
-import './App.css';
+import Header from './app/layout/header/Header'; // Header 컴포넌트 경로
 
-function App() {
+const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const email = localStorage.getItem('email');
-    setIsAuthenticated(!!email);
+    const checkAuth = () => {
+      const email = localStorage.getItem('email');
+      setIsAuthenticated(!!email);
+    };
+
+    // 로컬 스토리지 변경 감지 및 인증 상태 초기화
+    window.addEventListener('storage', checkAuth);
+    checkAuth();
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+    };
   }, []);
 
   return (
     <Router>
-      {isAuthenticated && (
-        <Header isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
-      )}
-      <TransitionGroup>
-        <CSSTransition timeout={300} classNames="fade" unmountOnExit>
-          <Routes>
-            <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" replace />} />
-            <Route path="/signin" element={isAuthenticated ? <Navigate to="/" replace /> : <SignIn setIsAuthenticated={setIsAuthenticated} />} />
-            <Route path="/wishlist" element={isAuthenticated ? <Wishlist /> : <Navigate to="/signin" replace />} />
-          </Routes>
-        </CSSTransition>
-      </TransitionGroup>
+      {/* 로그인 상태일 때만 Header 렌더링 */}
+      {isAuthenticated && <Header setIsAuthenticated={setIsAuthenticated} />}
+      <Routes>
+        {/* 보호된 경로 */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/popular"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Popular />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Search />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/wishlist"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Wishlist />
+            </ProtectedRoute>
+          }
+        />
+        {/* 로그인 경로 */}
+        <Route
+          path="/signin"
+          element={<SignIn setIsAuthenticated={setIsAuthenticated} />}
+        />
+        {/* 기본 경로 처리 */}
+        <Route
+          path="*"
+          element={<Navigate to={isAuthenticated ? '/' : '/signin'} replace />}
+        />
+      </Routes>
     </Router>
   );
-}
+};
+
+// 보호된 경로 컴포넌트
+const ProtectedRoute = ({ isAuthenticated, children }) => {
+  const location = useLocation();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" replace state={{ from: location }} />;
+  }
+
+  return children;
+};
 
 export default App;

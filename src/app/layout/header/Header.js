@@ -8,35 +8,41 @@ const Header = ({ setIsAuthenticated }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const [userEmail, setUserEmail] = useState(null); // 사용자 이메일 상태 추가
+  const [userEmail, setUserEmail] = useState(null);
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 768); // 화면 크기 상태
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleResize = () => setIsSmallScreen(window.innerWidth <= 768); // 화면 크기 변경 시 상태 업데이트
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize); // 화면 크기 변경 이벤트 추가
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize); // 이벤트 제거
+    };
   }, []);
 
   useEffect(() => {
-    // localStorage에서 찜 목록 불러오기
-    const storedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-    setWishlistCount(storedWishlist.length);
-
-    // 로그인된 이메일 가져오기
-    const email = localStorage.getItem('email');
-    setUserEmail(email); // 이메일 상태 설정
+    const storedEmail = localStorage.getItem('email');
+    if (storedEmail) {
+      setUserEmail(storedEmail);
+      const storedWishlist = JSON.parse(localStorage.getItem(`wishlist_${storedEmail}`)) || [];
+      setWishlistCount(storedWishlist.length);
+    } else {
+      setUserEmail(null);
+      setWishlistCount(0);
+    }
   }, [setIsAuthenticated]);
 
-  const removeKey = () => {
-    // localStorage에서 로그인 정보 및 찜 리스트 삭제
+  const handleLogout = () => {
     localStorage.removeItem('email');
-    localStorage.removeItem('password');
+    localStorage.removeItem('rememberedEmail');
+    localStorage.removeItem('autoLogin');
     localStorage.removeItem('wishlist');
-    
-    // 인증 상태를 false로 설정
-    setIsAuthenticated(false);
 
-    // 페이지 리디렉션 (로그인 페이지로 이동)
+    setIsAuthenticated(false);
     navigate('/signin');
   };
 
@@ -44,11 +50,7 @@ const Header = ({ setIsAuthenticated }) => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  if (!userEmail) {
-    return null; // 로그인되지 않은 경우 헤더를 표시하지 않음
-  }
-
-  return (
+  return userEmail ? (
     <div id="container">
       <header className={`app-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="header-left">
@@ -61,20 +63,25 @@ const Header = ({ setIsAuthenticated }) => {
             <ul>
               <li><Link to="/">홈</Link></li>
               <li><Link to="/popular">대세 콘텐츠</Link></li>
-              <li><Link to="/wishlist">내가 찜한 리스트 </Link></li>
+              <li><Link to="/wishlist">내가 찜한 리스트</Link></li>
               <li><Link to="/search">찾아보기</Link></li>
             </ul>
           </nav>
         </div>
         <div className="header-right">
-          {userEmail && ( // 로그인 상태일 때 이메일과 로그아웃 버튼 표시
-            <>
-              <span>{userEmail}</span> 
-              <button className="icon-button" onClick={removeKey}>
-                <FontAwesomeIcon icon={faSignOutAlt} /> 로그아웃
-              </button>
-            </>
+          <span className="user-email">{userEmail}</span>
+
+          {/* 로그아웃 버튼과 아이콘을 화면 크기에 따라 표시 */}
+          {!isSmallScreen ? (
+            <button className="icon-button logout-button" onClick={handleLogout}>
+              <FontAwesomeIcon icon={faSignOutAlt} /> 로그아웃
+            </button>
+          ) : (
+            <button className="icon-button logout-icon" onClick={handleLogout}>
+              <FontAwesomeIcon icon={faSignOutAlt} />
+            </button>
           )}
+
           <button className="icon-button mobile-menu-button" onClick={toggleMobileMenu}>
             <FontAwesomeIcon icon={faBars} />
           </button>
@@ -89,13 +96,13 @@ const Header = ({ setIsAuthenticated }) => {
           <ul>
             <li><Link to="/" onClick={toggleMobileMenu}>홈</Link></li>
             <li><Link to="/popular" onClick={toggleMobileMenu}>대세 콘텐츠</Link></li>
-            <li><Link to="/wishlist" onClick={toggleMobileMenu}>내가 찜한 리스트 </Link></li>
+            <li><Link to="/wishlist" onClick={toggleMobileMenu}>내가 찜한 리스트</Link></li>
             <li><Link to="/search" onClick={toggleMobileMenu}>찾아보기</Link></li>
           </ul>
         </nav>
       </div>
     </div>
-  );
+  ) : null; // 로그인하지 않은 경우 헤더를 표시하지 않음
 };
 
 export default Header;
