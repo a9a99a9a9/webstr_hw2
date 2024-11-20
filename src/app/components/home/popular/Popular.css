@@ -9,7 +9,7 @@
 
 .movie-grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 기본 그리드 설정 */
   gap: 20px;
   margin-top: 20px;
   overflow: hidden;
@@ -92,28 +92,29 @@
 /* 영화 목록 스타일 (테이블 뷰) */
 .movie-grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 기본 그리드 */
   gap: 20px;
   margin-top: 20px;
   overflow: hidden;
 }
 
 /* 반응형 조정: 화면 크기에 따라 한 줄에 보여줄 영화 개수 조정 */
+/* 주석: 화면 크기에 따라 영화 포스터의 개수와 크기를 자동으로 조정 */
 @media (min-width: 1200px) {
   .movie-grid-container {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(8, 1fr); /* 큰 화면에서 한 줄에 8개 */
   }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
   .movie-grid-container {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr); /* 중간 화면에서 한 줄에 5개 */
   }
 }
 
 @media (max-width: 767px) {
   .movie-grid-container {
-    grid-template-columns: repeat(2, 1fr); /* 작은 화면에서 2개 */
+    grid-template-columns: repeat(2, 1fr); /* 작은 화면에서 한 줄에 2개 */
   }
 }
 

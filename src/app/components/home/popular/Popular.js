@@ -15,9 +15,9 @@ const Popular = () => {
   const [viewType, setViewType] = useState('grid');
   const [wishlist, setWishlist] = useState([]);
   const [recommendedMovies, setRecommendedMovies] = useState([]);
+  const [moviesPerPage, setMoviesPerPage] = useState(12); // 초기값 설정
   const movieListRef = useRef(null);
   const currentUserEmail = localStorage.getItem('email');
-  const moviesPerPage = 12; // 한 페이지에 보여줄 영화 수
 
   useEffect(() => {
     fetchMoviesData();
@@ -26,6 +26,26 @@ const Popular = () => {
     setWishlist(storedWishlist);
     setRecommendedMovies(storedRecommendedMovies);
   }, [currentUserEmail, currentPage]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width >= 1200) {
+        setMoviesPerPage(8); // 큰 화면
+      } else if (width >= 768) {
+        setMoviesPerPage(5); // 중간 화면
+      } else {
+        setMoviesPerPage(2);  // 작은 화면
+      }
+    };
+
+    handleResize(); // 초기 로드 시 실행
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const fetchMoviesData = async () => {
     try {
@@ -68,21 +88,12 @@ const Popular = () => {
     setSelectedMovie(null);
   };
 
-  const addToWishlist = () => {
-    if (selectedMovie && !wishlist.some((movie) => movie.id === selectedMovie.id)) {
-      const newWishlist = [...wishlist, selectedMovie];
-      setWishlist(newWishlist);
-      localStorage.setItem(`wishlist_${currentUserEmail}`, JSON.stringify(newWishlist));
-      closeModal();
-    }
-  };
-
   const handleViewChange = (view) => {
     setViewType(view);
     if (view === 'grid') {
-      setHasMore(false); // 무한 스크롤 중지
+      setHasMore(false);
     } else {
-      setHasMore(true); // 무한 스크롤 활성화
+      setHasMore(true);
     }
   };
 
@@ -106,7 +117,7 @@ const Popular = () => {
       </div>
 
       {isModalOpen && selectedMovie && (
-        <MovieModal movie={selectedMovie} onClose={closeModal} onAddToWishlist={addToWishlist} />
+        <MovieModal movie={selectedMovie} onClose={closeModal} />
       )}
 
       {viewType === 'grid' ? (
@@ -123,7 +134,7 @@ const Popular = () => {
             <button onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))} disabled={currentPage === 1}>
               이전 페이지
             </button>
-            <span>{currentPage}</span>
+            <span>현재 페이지: {currentPage}</span>
             <button onClick={loadMoreMovies} disabled={movies.length <= currentPage * moviesPerPage}>
               다음 페이지
             </button>
@@ -136,7 +147,6 @@ const Popular = () => {
           hasMore={hasMore}
           loader={<h4>로딩 중...</h4>}
           endMessage={<p>더 이상 영화가 없습니다.</p>}
-          scrollableTarget="popular-container"
         >
           <div ref={movieListRef} className="movie-list-container">
             {movies.map((movie) => (
