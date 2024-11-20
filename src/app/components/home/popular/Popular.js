@@ -72,11 +72,14 @@ const Popular = () => {
     try {
       const movieDetails = await fetchMovieDetails(movieId);
       setSelectedMovie(movieDetails);
-      if (!recommendedMovies.some((m) => m.id === movieId)) {
-        const updatedRecommended = [...recommendedMovies, movieDetails];
-        setRecommendedMovies(updatedRecommended);
-        localStorage.setItem(`recommendedMovies_${currentUserEmail}`, JSON.stringify(updatedRecommended));
+
+      // 영화 포스터를 클릭할 때 추천 영화로 저장
+      if (!recommendedMovies.some((movie) => movie.id === movieId)) {
+        const updatedRecommendedMovies = [...recommendedMovies, movieDetails];
+        setRecommendedMovies(updatedRecommendedMovies);
+        localStorage.setItem(`recommendedMovies_${currentUserEmail}`, JSON.stringify(updatedRecommendedMovies));
       }
+
       setIsModalOpen(true);
     } catch (error) {
       console.error('영화 상세 정보 로드 실패:', error);
@@ -88,14 +91,16 @@ const Popular = () => {
     setSelectedMovie(null);
   };
 
-  const handleViewChange = (view) => {
-    setViewType(view);
-    if (view === 'grid') {
-      setHasMore(false);
-    } else {
-      setHasMore(true);
+  const addToWishlist = () => {
+    if (selectedMovie && !wishlist.some((movie) => movie.id === selectedMovie.id)) {
+      const updatedWishlist = [...wishlist, selectedMovie];
+      setWishlist(updatedWishlist);
+      localStorage.setItem(`wishlist_${currentUserEmail}`, JSON.stringify(updatedWishlist)); // 찜 목록을 localStorage에 저장
+      closeModal();
     }
   };
+
+  const handleViewChange = (view) => setViewType(view);
 
   const scrollToTop = () => {
     if (movieListRef.current) {
@@ -117,7 +122,11 @@ const Popular = () => {
       </div>
 
       {isModalOpen && selectedMovie && (
-        <MovieModal movie={selectedMovie} onClose={closeModal} />
+        <MovieModal
+          movie={selectedMovie}
+          onClose={closeModal}
+          onAddToWishlist={addToWishlist} // 찜하기 기능 추가
+        />
       )}
 
       {viewType === 'grid' ? (

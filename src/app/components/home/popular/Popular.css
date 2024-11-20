@@ -129,6 +129,16 @@
   padding-right: 10px;
 }
 
+/* 영화 포스터 크기 제한 (리스트형 뷰) */
+/* 주석: 리스트 뷰에서 포스터의 최대 크기를 설정하여 화면이 고정되도록 유지 */
+.movie-item img {
+  max-width: 150px; /* 포스터 최대 너비 */
+  max-height: 200px; /* 포스터 최대 높이 */
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
 .movie-item {
   cursor: pointer;
   transition: transform 0.3s;
@@ -136,12 +146,6 @@
   padding: 5px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.movie-item img {
-  width: 100px;
-  height: 150px;
-  border-radius: 10px;
 }
 
 .movie-item p {
