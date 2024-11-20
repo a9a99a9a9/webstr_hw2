@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/webstr_hw2/static/css/main.2a3d170c.css",
+    "main.js": "/webstr_hw2/static/js/main.23ef7f25.js",
+    "index.html": "/webstr_hw2/index.html",
+    "main.2a3d170c.css.map": "/webstr_hw2/static/css/main.2a3d170c.css.map",
+    "main.23ef7f25.js.map": "/webstr_hw2/static/js/main.23ef7f25.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2a3d170c.css",
+    "static/js/main.23ef7f25.js"
+  ]
+}
