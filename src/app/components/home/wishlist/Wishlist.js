@@ -35,32 +35,23 @@ const Wishlist = () => {
   const openModal = (movie) => {
     setSelectedMovie(movie);
     setIsModalOpen(true);
+    addToRecommended(movie); // 포스터 클릭 시 자동으로 추천 영화에 추가
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-  const toggleRecommendedMovie = (movie) => {
-    let updatedRecommendedMovies = [...recommendedMovies];
-    const index = updatedRecommendedMovies.findIndex((m) => m.id === movie.id);
-
-    if (index > -1) {
-      // 이미 추천된 영화가 있다면 삭제
-      updatedRecommendedMovies.splice(index, 1);
-    } else {
-      // 추천 목록에 추가
-      updatedRecommendedMovies.push(movie);
+  const addToRecommended = (movie) => {
+    if (!recommendedMovies.some((m) => m.id === movie.id)) {
+      const updatedRecommendedMovies = [...recommendedMovies, movie];
+      setRecommendedMovies(updatedRecommendedMovies);
+      localStorage.setItem(`recommendedMovies_${currentUserEmail}`, JSON.stringify(updatedRecommendedMovies));
     }
-
-    setRecommendedMovies(updatedRecommendedMovies);
-    localStorage.setItem(`recommendedMovies_${currentUserEmail}`, JSON.stringify(updatedRecommendedMovies)); // 사용자별 추천 영화 저장
   };
 
   return (
     <div className="wishlist-container">
-
-
       <h1>내가 찜한 리스트</h1>
 
       {wishlist.length === 0 ? (
@@ -93,22 +84,7 @@ const Wishlist = () => {
       {isModalOpen && selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={closeModal} />
       )}
-
-            {/* 추천 영화 섹션 */}
-            <div className="recommended-movies">
-        <h2>추천 영화</h2>
-        <div className="movie-row-container">
-          {recommendedMovies.map((movie) => (
-            <div key={movie.id} className="movie-poster" onClick={() => openModal(movie)}>
-              <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
-              <p>{movie.title}</p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
-
-    
   );
 };
 

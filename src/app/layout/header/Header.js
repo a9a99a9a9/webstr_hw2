@@ -9,12 +9,19 @@ const Header = ({ setIsAuthenticated }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [userEmail, setUserEmail] = useState(null);
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 768); // 화면 크기 상태
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleResize = () => setIsSmallScreen(window.innerWidth <= 768); // 화면 크기 변경 시 상태 업데이트
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize); // 화면 크기 변경 이벤트 추가
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize); // 이벤트 제거
+    };
   }, []);
 
   useEffect(() => {
@@ -30,7 +37,6 @@ const Header = ({ setIsAuthenticated }) => {
   }, [setIsAuthenticated]);
 
   const handleLogout = () => {
-    // 로컬 스토리지에서 사용자 정보 삭제
     localStorage.removeItem('email');
     localStorage.removeItem('rememberedEmail');
     localStorage.removeItem('autoLogin');
@@ -64,9 +70,18 @@ const Header = ({ setIsAuthenticated }) => {
         </div>
         <div className="header-right">
           <span className="user-email">{userEmail}</span>
-          <button className="icon-button logout-button" onClick={handleLogout}>
-            <FontAwesomeIcon icon={faSignOutAlt} /> 로그아웃
-          </button>
+
+          {/* 로그아웃 버튼과 아이콘을 화면 크기에 따라 표시 */}
+          {!isSmallScreen ? (
+            <button className="icon-button logout-button" onClick={handleLogout}>
+              <FontAwesomeIcon icon={faSignOutAlt} /> 로그아웃
+            </button>
+          ) : (
+            <button className="icon-button logout-icon" onClick={handleLogout}>
+              <FontAwesomeIcon icon={faSignOutAlt} />
+            </button>
+          )}
+
           <button className="icon-button mobile-menu-button" onClick={toggleMobileMenu}>
             <FontAwesomeIcon icon={faBars} />
           </button>
