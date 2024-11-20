@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SignIn.css';
+import toast, { Toaster } from 'react-hot-toast'; // Custom Toast 추가
 
 const SignIn = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
@@ -9,13 +10,24 @@ const SignIn = ({ setIsAuthenticated }) => {
   const [isLoginVisible, setIsLoginVisible] = useState(true);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
-
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태 추가
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isTermsChecked, setIsTermsChecked] = useState(false); // 약관 동의 체크박스 상태 추가
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Remember Me 기능 구현: 자동 로그인
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    const autoLogin = localStorage.getItem('autoLogin');
+    if (autoLogin === 'true' && rememberedEmail) {
+      setEmail(rememberedEmail);
+      setIsAuthenticated(true);
+      navigate('/');
+    }
+  }, [setIsAuthenticated, navigate]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -26,15 +38,29 @@ const SignIn = ({ setIsAuthenticated }) => {
 
     if (foundUser) {
       setIsAuthenticated(true);
-      localStorage.setItem('email', email); // 로그인된 이메일을 로컬스토리지에 저장
+      localStorage.setItem('email', email);
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+        localStorage.setItem('autoLogin', 'true');
+      } else {
+        localStorage.removeItem('rememberedEmail');
+        localStorage.setItem('autoLogin', 'false');
+      }
+      toast.success('로그인 성공!');
       navigate('/');
     } else {
       setErrorMessage('아이디 또는 비밀번호가 일치하지 않습니다.');
+      toast.error('로그인 실패. 다시 시도해 주세요.');
     }
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
+
+    if (!isTermsChecked) {
+      setErrorMessage('약관에 동의해야 회원가입이 가능합니다.');
+      return;
+    }
 
     if (registerPassword !== confirmPassword) {
       setErrorMessage('비밀번호가 일치하지 않습니다.');
@@ -43,11 +69,7 @@ const SignIn = ({ setIsAuthenticated }) => {
 
     if (registerEmail && registerPassword) {
       const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
-
-      // 이메일 중복 확인
-      const isEmailTaken = registeredUsers.some(
-        (user) => user.email === registerEmail
-      );
+      const isEmailTaken = registeredUsers.some((user) => user.email === registerEmail);
 
       if (isEmailTaken) {
         setErrorMessage('이미 사용 중인 이메일입니다.');
@@ -59,7 +81,7 @@ const SignIn = ({ setIsAuthenticated }) => {
       localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
 
       setErrorMessage('');
-      alert('회원가입이 완료되었습니다. 이제 로그인할 수 있습니다.');
+      toast.success('회원가입이 완료되었습니다. 이제 로그인하세요!');
       toggleCard();
     } else {
       setErrorMessage('모든 필드를 입력해 주세요.');
@@ -78,6 +100,7 @@ const SignIn = ({ setIsAuthenticated }) => {
 
   const toggleCard = () => {
     setIsLoginVisible(!isLoginVisible);
+    setErrorMessage('');
   };
 
   const isValidEmail = (email) => {
@@ -87,6 +110,7 @@ const SignIn = ({ setIsAuthenticated }) => {
 
   return (
     <div>
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="bg-image"></div>
       <div className="container">
         <div id="phone">
@@ -173,7 +197,12 @@ const SignIn = ({ setIsAuthenticated }) => {
                   <label htmlFor="confirm-password">Confirm Password</label>
                 </div>
                 <span className="checkbox remember">
-                  <input type="checkbox" id="terms" />
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    checked={isTermsChecked}
+                    onChange={() => setIsTermsChecked(!isTermsChecked)}
+                  />
                   <label htmlFor="terms" className="read-text">I have read the Terms and Conditions</label>
                 </span>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
