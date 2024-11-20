@@ -143,7 +143,7 @@ const Popular = () => {
             <button onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))} disabled={currentPage === 1}>
               이전 페이지
             </button>
-            <span>현재 페이지: {currentPage}</span>
+            <span>{currentPage}P</span>
             <button onClick={loadMoreMovies} disabled={movies.length <= currentPage * moviesPerPage}>
               다음 페이지
             </button>

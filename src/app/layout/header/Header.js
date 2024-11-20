@@ -32,7 +32,7 @@ const Header = ({ setIsAuthenticated }) => {
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     localStorage.removeItem('wishlist');
-    
+
     // 인증 상태를 false로 설정
     setIsAuthenticated(false);
 
@@ -61,19 +61,21 @@ const Header = ({ setIsAuthenticated }) => {
             <ul>
               <li><Link to="/">홈</Link></li>
               <li><Link to="/popular">대세 콘텐츠</Link></li>
-              <li><Link to="/wishlist">내가 찜한 리스트 </Link></li>
+              <li><Link to="/wishlist">내가 찜한 리스트</Link></li>
               <li><Link to="/search">찾아보기</Link></li>
             </ul>
           </nav>
         </div>
         <div className="header-right">
-          {userEmail && ( // 로그인 상태일 때 이메일과 로그아웃 버튼 표시
+          {userEmail && (
             <>
               <span className="user-email">{userEmail}</span>
-<button className="icon-button" onClick={removeKey}>
-  <FontAwesomeIcon icon={faSignOutAlt} /> 로그아웃
-</button>
-
+              <button className="icon-button logout-button" onClick={removeKey}>
+                <FontAwesomeIcon icon={faSignOutAlt} /> 로그아웃
+              </button>
+              <button className="icon-button logout-icon" onClick={removeKey}>
+                <FontAwesomeIcon icon={faSignOutAlt} />
+              </button>
             </>
           )}
           <button className="icon-button mobile-menu-button" onClick={toggleMobileMenu}>
@@ -90,7 +92,7 @@ const Header = ({ setIsAuthenticated }) => {
           <ul>
             <li><Link to="/" onClick={toggleMobileMenu}>홈</Link></li>
             <li><Link to="/popular" onClick={toggleMobileMenu}>대세 콘텐츠</Link></li>
-            <li><Link to="/wishlist" onClick={toggleMobileMenu}>내가 찜한 리스트 </Link></li>
+            <li><Link to="/wishlist" onClick={toggleMobileMenu}>내가 찜한 리스트</Link></li>
             <li><Link to="/search" onClick={toggleMobileMenu}>찾아보기</Link></li>
           </ul>
         </nav>
