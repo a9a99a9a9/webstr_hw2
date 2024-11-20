@@ -5,7 +5,7 @@ import './Search.css';
 import { fetchMovies, fetchMovieDetails } from '../../../util/api/APIService'; // fetchMovieDetails 추가
 
 const Search = () => {
-  const [genreId, setGenreId] = useState(''); // 기본 장르 전체
+  const [genreId, setGenreId] = useState(''); // 기본 장르
   const [minVote, setMinVote] = useState(0); // 기본 최소 평점
   const [maxVote, setMaxVote] = useState(10); // 기본 최대 평점
   const [sortId, setSortId] = useState('popularity.desc'); // 기본 정렬
@@ -14,10 +14,22 @@ const Search = () => {
   const [hasMore, setHasMore] = useState(true);
   const [selectedMovie, setSelectedMovie] = useState(null); // 선택된 영화 정보 저장
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
+  const [recommendedMovies, setRecommendedMovies] = useState([]);
+
+  const currentUserEmail = localStorage.getItem('email'); // 현재 사용자 이메일 가져오기
 
   useEffect(() => {
     fetchMoviesData(); // 초기 영화 데이터 로드
   }, [genreId, minVote, maxVote, sortId, page]);
+
+  useEffect(() => {
+    const storedWishlist = JSON.parse(localStorage.getItem(`wishlist_${currentUserEmail}`)) || [];
+    const storedRecommendedMovies = JSON.parse(localStorage.getItem(`recommendedMovies_${currentUserEmail}`)) || [];
+
+    setWishlist(storedWishlist);
+    setRecommendedMovies(storedRecommendedMovies);
+  }, [currentUserEmail]);
 
   const fetchMoviesData = async () => {
     try {
@@ -32,7 +44,7 @@ const Search = () => {
       if (data.length > 0) {
         setMovies((prevMovies) => {
           const allMovies = [...prevMovies, ...data];
-          const uniqueMovies = Array.from(new Map(allMovies.map(movie => [movie.id, movie])).values());
+          const uniqueMovies = Array.from(new Map(allMovies.map((movie) => [movie.id, movie])).values());
           return uniqueMovies;
         });
         setHasMore(true);
@@ -50,9 +62,8 @@ const Search = () => {
 
   const handleSearchChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'genre') {
-      setGenreId(value === '0' ? '' : value); // '장르 (전체)' 선택 시 빈 값 설정
-    } else if (name === 'age') {
+    if (name === 'genre') setGenreId(value);
+    else if (name === 'age') {
       switch (value) {
         case '9':
           setMinVote(9);
@@ -83,21 +94,24 @@ const Search = () => {
           setMaxVote(4);
           break;
         default:
-          setMinVote(0); // 평점 전체
+          setMinVote(0);
           setMaxVote(10);
           break;
       }
-    } else if (name === 'sort') {
-      setSortId(value);
-    }
+    } else if (name === 'sort') setSortId(value);
+
     setPage(1); // 페이지와 영화 목록 초기화
     setMovies([]);
   };
 
   const openModal = async (movieId) => {
     try {
-      const movieDetails = await fetchMovieDetails(movieId); // 영화 상세 정보 가져오기
+      const movieDetails = await fetchMovieDetails(movieId);
       setSelectedMovie(movieDetails);
+
+      // 추천 영화에 자동 등록
+      toggleRecommendedMovie(movieDetails);
+
       setIsModalOpen(true);
     } catch (error) {
       console.error('영화 상세 정보 로드 실패:', error);
@@ -109,48 +123,54 @@ const Search = () => {
     setSelectedMovie(null);
   };
 
+  const addToWishlist = () => {
+    if (selectedMovie && !wishlist.some((movie) => movie.id === selectedMovie.id)) {
+      const newWishlist = [...wishlist, selectedMovie];
+      setWishlist(newWishlist);
+      localStorage.setItem(`wishlist_${currentUserEmail}`, JSON.stringify(newWishlist)); // 사용자별 찜 목록 저장
+    }
+    closeModal();
+  };
+
+  const toggleRecommendedMovie = (movie) => {
+    const updatedRecommendedMovies = [...recommendedMovies];
+    const index = updatedRecommendedMovies.findIndex((m) => m.id === movie.id);
+
+    if (index > -1) {
+      updatedRecommendedMovies.splice(index, 1); // 이미 존재하면 제거
+    } else {
+      updatedRecommendedMovies.push(movie); // 없으면 추가
+    }
+
+    setRecommendedMovies(updatedRecommendedMovies);
+    localStorage.setItem(`recommendedMovies_${currentUserEmail}`, JSON.stringify(updatedRecommendedMovies));
+  };
+
   return (
     <div className="search-container">
       <h1>영화 검색</h1>
       <div className="search-filters">
+        {/* 장르 필터 */}
         <select name="genre" onChange={handleSearchChange}>
-          <option value="0">장르 (전체)</option>
+          <option value="">장르 (전체)</option>
           <option value="28">액션</option>
           <option value="12">모험</option>
           <option value="16">애니메이션</option>
           <option value="35">코미디</option>
           <option value="80">범죄</option>
-          <option value="99">다큐멘터리</option>
           <option value="18">드라마</option>
-          <option value="10751">가족</option>
-          <option value="14">판타지</option>
-          <option value="36">역사</option>
-          <option value="27">공포</option>
-          <option value="10402">음악</option>
-          <option value="9648">미스터리</option>
-          <option value="10749">로맨스</option>
-          <option value="878">SF</option>
-          <option value="10770">TV 영화</option>
-          <option value="53">스릴러</option>
-          <option value="10752">전쟁</option>
-          <option value="37">서부극</option>
         </select>
-
+        {/* 평점 필터 */}
         <select name="age" onChange={handleSearchChange}>
-          <option value="10">평점 (전체)</option>
+          <option value="-1">평점 (전체)</option>
           <option value="9">9~10</option>
           <option value="8">8~9</option>
           <option value="7">7~8</option>
-          <option value="6">6~7</option>
-          <option value="5">5~6</option>
-          <option value="4">4~5</option>
-          <option value="0">4점 이하</option>
         </select>
-
+        {/* 정렬 필터 */}
         <select name="sort" onChange={handleSearchChange}>
           <option value="popularity.desc">인기순</option>
           <option value="vote_average.desc">평점순</option>
-          <option value="release_date.desc">최신순</option>
         </select>
       </div>
 
@@ -172,7 +192,11 @@ const Search = () => {
       </InfiniteScroll>
 
       {isModalOpen && selectedMovie && (
-        <MovieModal movie={selectedMovie} onClose={closeModal} />
+        <MovieModal
+          movie={selectedMovie}
+          onClose={closeModal}
+          onAddToWishlist={addToWishlist}
+        />
       )}
     </div>
   );
