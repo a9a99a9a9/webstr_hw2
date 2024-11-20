@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // navigate 추가
 import MovieRow from './MovieRow/MovieRow';
 import MovieModal from './movie-modal/MovieModal'; // 모달 컴포넌트 추가
 import './Home.css';
@@ -29,9 +30,16 @@ function Home() {
   const [wishlist, setWishlist] = useState([]);
   const [recommendedMovies, setRecommendedMovies] = useState([]);
 
+  const navigate = useNavigate(); // navigate 선언
   const currentUserEmail = localStorage.getItem('email'); // 현재 로그인된 사용자 이메일
 
   useEffect(() => {
+    // 로그인 상태 확인
+    if (!currentUserEmail) {
+      navigate('/signin'); // 로그인 상태가 아니면 /signin으로 리다이렉트
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -66,8 +74,7 @@ function Home() {
     // localStorage에서 현재 사용자 추천 영화 불러오기
     const storedRecommendedMovies = JSON.parse(localStorage.getItem(`recommendedMovies_${currentUserEmail}`)) || [];
     setRecommendedMovies(storedRecommendedMovies);
-
-  }, [currentUserEmail]);
+  }, [currentUserEmail, navigate]); // currentUserEmail과 navigate 의존성 추가
 
   const openModal = (movie) => {
     setSelectedMovie(movie);
