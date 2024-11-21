@@ -13,6 +13,7 @@ const SignIn = ({ setIsAuthenticated }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isTermsChecked, setIsTermsChecked] = useState(false);
+  const [isAuthLoaded, setIsAuthLoaded] = useState(false); // 인증 상태 로드 여부 추가
   const navigate = useNavigate();
 
   const TMDB_API_KEY = '7bd1ba614e1eca467c9c659df3f40e8b'; // TMDB API Key
@@ -21,20 +22,25 @@ const SignIn = ({ setIsAuthenticated }) => {
     const rememberedEmail = localStorage.getItem('rememberedEmail');
     const autoLogin = localStorage.getItem('autoLogin') === 'true';
 
-    // Remember me가 활성화된 경우 이메일을 입력창에 유지
     if (rememberedEmail) {
       setEmail(rememberedEmail);
       setRememberMe(true);
     }
 
-    // 자동 로그인
     if (autoLogin) {
       const savedEmail = localStorage.getItem('email');
       if (savedEmail) {
         setIsAuthenticated(true);
         navigate('/');
       }
+    } else {
+      // Remember me가 체크되지 않은 경우 로그아웃 처리
+      localStorage.removeItem('email');
+      setIsAuthenticated(false);
     }
+
+    // 인증 상태 로드 완료 설정
+    setIsAuthLoaded(true);
   }, [setIsAuthenticated, navigate]);
 
   const fetchTMDBToken = async () => {
@@ -81,15 +87,9 @@ const SignIn = ({ setIsAuthenticated }) => {
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('email');
-    localStorage.removeItem('autoLogin');
-    // Remember me가 활성화된 경우 이메일 유지
-    if (!rememberMe) {
-      localStorage.removeItem('rememberedEmail');
-    }
-    navigate('/signin');
+  const toggleCard = () => {
+    setIsLoginVisible(!isLoginVisible);
+    setErrorMessage('');
   };
 
   const handleRegister = (e) => {
@@ -132,15 +132,15 @@ const SignIn = ({ setIsAuthenticated }) => {
     toggleCard();
   };
 
-  const toggleCard = () => {
-    setIsLoginVisible(!isLoginVisible);
-    setErrorMessage('');
-  };
-
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+
+  if (!isAuthLoaded) {
+    // 인증 상태 로드 중일 때 로딩 상태 표시
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
