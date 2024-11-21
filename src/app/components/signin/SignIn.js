@@ -8,25 +8,39 @@ const SignIn = ({ setIsAuthenticated }) => {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoginVisible, setIsLoginVisible] = useState(true);
-  const [isEmailFocused, setIsEmailFocused] = useState(false);
-  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isTermsChecked, setIsTermsChecked] = useState(false);
+  const [isAuthLoaded, setIsAuthLoaded] = useState(false); // 인증 상태 로드 여부 추가
   const navigate = useNavigate();
 
   const TMDB_API_KEY = '7bd1ba614e1eca467c9c659df3f40e8b'; // TMDB API Key
 
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('rememberedEmail');
-    const autoLogin = localStorage.getItem('autoLogin');
-    if (autoLogin === 'true' && rememberedEmail) {
+    const autoLogin = localStorage.getItem('autoLogin') === 'true';
+
+    if (rememberedEmail) {
       setEmail(rememberedEmail);
-      setIsAuthenticated(true);
-      navigate('/');
+      setRememberMe(true);
     }
+
+    if (autoLogin) {
+      const savedEmail = localStorage.getItem('email');
+      if (savedEmail) {
+        setIsAuthenticated(true);
+        navigate('/');
+      }
+    } else {
+      // Remember me가 체크되지 않은 경우 로그아웃 처리
+      localStorage.removeItem('email');
+      setIsAuthenticated(false);
+    }
+
+    // 인증 상태 로드 완료 설정
+    setIsAuthLoaded(true);
   }, [setIsAuthenticated, navigate]);
 
   const fetchTMDBToken = async () => {
@@ -55,6 +69,7 @@ const SignIn = ({ setIsAuthenticated }) => {
       if (token) {
         setIsAuthenticated(true);
         localStorage.setItem('email', email);
+
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', email);
           localStorage.setItem('autoLogin', 'true');
@@ -62,6 +77,7 @@ const SignIn = ({ setIsAuthenticated }) => {
           localStorage.removeItem('rememberedEmail');
           localStorage.setItem('autoLogin', 'false');
         }
+
         toast.success('로그인 성공!');
         navigate('/');
       }
@@ -69,6 +85,11 @@ const SignIn = ({ setIsAuthenticated }) => {
       setErrorMessage('아이디 또는 비밀번호가 일치하지 않습니다.');
       toast.error('로그인 실패. 다시 시도해 주세요.');
     }
+  };
+
+  const toggleCard = () => {
+    setIsLoginVisible(!isLoginVisible);
+    setErrorMessage('');
   };
 
   const handleRegister = (e) => {
@@ -111,25 +132,15 @@ const SignIn = ({ setIsAuthenticated }) => {
     toggleCard();
   };
 
-  const focusInput = (field) => {
-    if (field === 'email') setIsEmailFocused(true);
-    if (field === 'password') setIsPasswordFocused(true);
-  };
-
-  const blurInput = (field) => {
-    if (field === 'email') setIsEmailFocused(false);
-    if (field === 'password') setIsPasswordFocused(false);
-  };
-
-  const toggleCard = () => {
-    setIsLoginVisible(!isLoginVisible);
-    setErrorMessage('');
-  };
-
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+
+  if (!isAuthLoaded) {
+    // 인증 상태 로드 중일 때 로딩 상태 표시
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -142,25 +153,21 @@ const SignIn = ({ setIsAuthenticated }) => {
             <div className={`card ${isLoginVisible ? '' : 'hidden'}`} id="login">
               <form onSubmit={handleLogin}>
                 <h1>Sign in</h1>
-                <div className={`input ${isEmailFocused || email ? 'active' : ''}`}>
+                <div className="input">
                   <input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    onFocus={() => focusInput('email')}
-                    onBlur={() => blurInput('email')}
                   />
                   <label htmlFor="email">Username or Email</label>
                 </div>
-                <div className={`input ${isPasswordFocused || password ? 'active' : ''}`}>
+                <div className="input">
                   <input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    onFocus={() => focusInput('password')}
-                    onBlur={() => blurInput('password')}
                   />
                   <label htmlFor="password">Password</label>
                 </div>

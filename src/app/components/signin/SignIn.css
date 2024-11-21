@@ -1,18 +1,18 @@
 /* 배경을 흰색으로 설정 */
 .bg-image {
-  background-color: #f0f0f0; /* 배경색을 약간 회색으로 변경하여 대비를 줌 */
-  position: absolute;
+  background-color: #f0f0f0; 
+  position:absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; /* 배경을 다른 요소 뒤로 보이게 함 */
+  z-index: -1;
 }
 
 /* 로그인 카드와 회원가입 카드 */
 .card {
   position: absolute;
-  width: 100%;
+  width: 100%; 
   max-width: 400px;
   padding: 30px;
   background-color: #ffffff;
@@ -20,13 +20,16 @@
   border-radius: 8px;
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
   opacity: 1;
-  top: 99%; /* 로그인 창을 더 위로 올리기 위해 top 값을 크게 조정 */
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box; /* 여백 계산 포함 */
 }
 
 .card.hidden {
-  transform: translateX(100%);
+  transform: translate(100%, -50%);
   opacity: 0;
-  display: block; /* 카드 전환 시 애니메이션 적용을 위해 display 속성 유지 */
+  display: block;
 }
 
 h1 {
@@ -39,16 +42,18 @@ h1 {
 .input {
   position: relative;
   margin-bottom: 20px;
+  width: 100%; /* 입력창이 박스 크기를 따라가도록 설정 */
 }
 
 .input input {
-  width: 100%;
+  width: 100%; /* 부모 요소에 맞게 자동으로 크기 조정 */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
   transition: border-color 0.3s;
   background-color: #ffffff;
+  box-sizing: border-box; /* 박스 크기를 초과하지 않도록 설정 */
 }
 
 .input input:focus {
@@ -61,7 +66,7 @@ h1 {
   left: 10px;
   top: -8px;
   font-size: 12px;
-  color: #666; /* 대비를 위해 색상 조정 */
+  color: #666;
   transition: 0.3s;
 }
 
@@ -140,22 +145,70 @@ a.account-check:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 200px; /* 로그인 창을 더 위로 올리기 위해 높이를 크게 조정 */
+  height: 100vh;
   position: relative;
 }
 
 /* Remember Me 및 약관 동의 텍스트 스타일 */
 .read-text {
-  color: black; /* 텍스트 색상을 검정으로 변경 */
+  color: black;
   font-size: 0.9rem;
 }
 
 .checkbox label {
-  color: black; /* 기본 체크박스 레이블 색상도 검정으로 설정 */
+  color: black;
 }
 
 .error-message {
-  color: red; /* 에러 메시지는 여전히 눈에 잘 띄도록 빨간색 유지 */
+  color: red;
   font-size: 0.85rem;
 }
 
+/* 반응형 설정 */
+@media (max-width: 768px) {
+  .card {
+    width: 90%; 
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .input input {
+    font-size: 13px; /* 글자 크기를 줄여 작은 화면에 맞춤 */
+  }
+
+  button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  a.account-check {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    width: 95%; 
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 18px;
+  }
+
+  .input input {
+    font-size: 12px;
+  }
+
+  button {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  a.account-check {
+    font-size: 11px;
+  }
+}
