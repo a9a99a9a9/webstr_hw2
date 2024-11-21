@@ -37,11 +37,19 @@ const Header = ({ setIsAuthenticated }) => {
   }, [setIsAuthenticated]);
 
   const handleLogout = () => {
-    localStorage.removeItem('email');
-    localStorage.removeItem('rememberedEmail');
-    localStorage.removeItem('autoLogin');
-    localStorage.removeItem('wishlist');
+    // 로그아웃 시 이메일 정보와 Remember me 상태 처리
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    const autoLogin = localStorage.getItem('autoLogin') === 'true';
 
+    localStorage.removeItem('email'); // 현재 로그인된 이메일 제거
+    localStorage.setItem('autoLogin', 'false'); // 자동 로그인 비활성화
+
+    // Remember me가 활성화된 경우 이메일 유지
+    if (!rememberedEmail || !autoLogin) {
+      localStorage.removeItem('rememberedEmail');
+    }
+
+    // 인증 상태 초기화 및 로그인 페이지로 이동
     setIsAuthenticated(false);
     navigate('/signin');
   };
