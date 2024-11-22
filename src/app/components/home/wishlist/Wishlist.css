@@ -70,13 +70,39 @@ button:active {
 }
 
 @media (max-width: 768px) {
-  /* 모바일 디바이스에서 반응형 레이아웃 */
   .wishlist-movies {
-    flex-direction: column; /* 모바일에서는 세로로 나열 */
-    align-items: center;
+    display: flex;
+    flex-wrap: wrap; /* 여러 줄로 표시 */
+    gap: 10px; /* 카드 간 간격 */
+    justify-content: center; /* 카드 가운데 정렬 */
   }
 
   .wishlist-movie {
-    max-width: 90%; /* 모바일에서 영화 카드가 화면에 맞게 확장 */
+    max-width: 45%; /* 한 줄에 두 개씩 배치 */
+    flex: 0 0 45%; /* 고정 너비 */
+    box-sizing: border-box; /* 패딩 포함 크기 계산 */
+    margin-bottom: 10px; /* 카드 간 아래 여백 */
+  }
+
+  .wishlist-movie img {
+    width: 100%; /* 카드 크기에 맞게 포스터 조정 */
+    height: auto; /* 비율 유지 */
+    border-radius: 8px; /* 둥근 모서리 */
+  }
+}
+
+@media (max-width: 480px) {
+  .wishlist-movies {
+    gap: 8px; /* 작은 화면에서 간격 줄이기 */
+  }
+
+  .wishlist-movie {
+    max-width: 48%; /* 더 작은 화면에서 두 개씩 배치 */
+    flex: 0 0 48%; /* 고정 너비 */
+  }
+
+  .wishlist-movie img {
+    width: 100%; /* 카드 크기에 맞게 포스터 조정 */
+    height: auto; /* 비율 유지 */
   }
 }
